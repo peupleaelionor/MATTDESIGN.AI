@@ -13,6 +13,7 @@ import {
 } from "@/components/ui";
 import type { ProjectBrief, PipelineState } from "@/types";
 import { AGENT_CONFIGS } from "@/config/agent-config";
+import { AgentIcon } from "@/components/agent-icon";
 import { cn } from "@/lib/utils";
 
 // ─── Generate Page ────────────────────────────────────────────────────────────
@@ -260,7 +261,7 @@ function GeneratingView({ brief }: { brief: Partial<ProjectBrief> }) {
                 : "border-[#1E293B]/50 bg-transparent opacity-30",
             )}
           >
-            <span className="text-lg">{agent.icon}</span>
+            <AgentIcon name={agent.icon} className="size-5" style={{ color: agent.color }} />
             <span className="text-sm font-medium text-slate-300 flex-1">{agent.name}</span>
             <span className={cn(
               "text-xs",
