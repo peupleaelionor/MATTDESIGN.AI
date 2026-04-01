@@ -1,8 +1,74 @@
 @import "tailwindcss";
 
+/* ─── MattDESIGN.AI v3 — Design System Tokens ─────────────────────────── */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Palette */
+  --md-bg:          #0A0F1E;
+  --md-bg-card:     #111827;
+  --md-bg-elevated: #1E293B;
+  --md-border:      #1E293B;
+
+  --md-primary:     #3B82F6;
+  --md-primary-dim: #1D4ED8;
+  --md-secondary:   #7C3AED;
+  --md-accent:      #06D6A0;
+
+  --md-text:        #F8FAFC;
+  --md-text-muted:  #94A3B8;
+  --md-text-dim:    #64748B;
+
+  /* Gradients */
+  --md-grad-primary: linear-gradient(135deg, #3B82F6 0%, #7C3AED 100%);
+  --md-grad-accent:  linear-gradient(135deg, #06D6A0 0%, #3B82F6 100%);
+  --md-grad-dark:    linear-gradient(180deg, #0A0F1E 0%, #111827 100%);
+
+  /* Typography scale */
+  --md-text-xs:   0.75rem;
+  --md-text-sm:   0.875rem;
+  --md-text-base: 1rem;
+  --md-text-lg:   1.125rem;
+  --md-text-xl:   1.25rem;
+  --md-text-2xl:  1.5rem;
+  --md-text-3xl:  1.875rem;
+  --md-text-4xl:  2.25rem;
+  --md-text-5xl:  3rem;
+  --md-text-6xl:  3.75rem;
+
+  /* Spacing */
+  --md-space-1:  0.25rem;
+  --md-space-2:  0.5rem;
+  --md-space-3:  0.75rem;
+  --md-space-4:  1rem;
+  --md-space-6:  1.5rem;
+  --md-space-8:  2rem;
+  --md-space-12: 3rem;
+  --md-space-16: 4rem;
+  --md-space-20: 5rem;
+  --md-space-24: 6rem;
+
+  /* Radius */
+  --md-radius-sm: 0.375rem;
+  --md-radius:    0.75rem;
+  --md-radius-lg: 1rem;
+  --md-radius-xl: 1.5rem;
+  --md-radius-full: 9999px;
+
+  /* Shadows */
+  --md-shadow-sm:  0 1px 3px rgba(0,0,0,0.4);
+  --md-shadow:     0 4px 16px rgba(0,0,0,0.5);
+  --md-shadow-lg:  0 8px 32px rgba(0,0,0,0.6);
+  --md-shadow-glow-blue:   0 0 24px rgba(59,130,246,0.35);
+  --md-shadow-glow-violet: 0 0 24px rgba(124,58,237,0.35);
+  --md-shadow-glow-accent: 0 0 24px rgba(6,214,160,0.3);
+
+  /* Transitions */
+  --md-transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --md-transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Legacy aliases for Tailwind */
+  --background: var(--md-bg);
+  --foreground: var(--md-text);
 }
 
 @theme inline {
@@ -12,15 +78,143 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─── Base Reset ────────────────────────────────────────────────────────── */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--md-bg);
+  color: var(--md-text);
+  font-family: var(--font-sans, 'Geist', system-ui, sans-serif);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* ─── Selection ─────────────────────────────────────────────────────────── */
+
+::selection {
+  background: rgba(59, 130, 246, 0.3);
+  color: #F8FAFC;
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────────────────────── */
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--md-bg); }
+::-webkit-scrollbar-thumb { background: var(--md-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--md-text-dim); }
+
+/* ─── Typography Utilities ──────────────────────────────────────────────── */
+
+.md-heading {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.md-subheading {
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+}
+
+/* ─── Gradient Text ─────────────────────────────────────────────────────── */
+
+.md-gradient-text {
+  background: var(--md-grad-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.md-gradient-text-accent {
+  background: var(--md-grad-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Glow Effects ──────────────────────────────────────────────────────── */
+
+.md-glow-blue   { box-shadow: var(--md-shadow-glow-blue); }
+.md-glow-violet { box-shadow: var(--md-shadow-glow-violet); }
+.md-glow-accent { box-shadow: var(--md-shadow-glow-accent); }
+
+/* ─── Grid Pattern Background ───────────────────────────────────────────── */
+
+.md-grid-bg {
+  background-image:
+    linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* ─── Noise Texture ─────────────────────────────────────────────────────── */
+
+.md-noise::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* ─── Card Glass ────────────────────────────────────────────────────────── */
+
+.md-glass {
+  background: rgba(17, 24, 39, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(30, 41, 59, 0.6);
+}
+
+/* ─── Focus ring ────────────────────────────────────────────────────────── */
+
+.md-focus-ring:focus-visible {
+  outline: 2px solid var(--md-primary);
+  outline-offset: 2px;
+}
+
+/* ─── Animations ────────────────────────────────────────────────────────── */
+
+@keyframes md-fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes md-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes md-pulse-glow {
+  0%, 100% { box-shadow: 0 0 16px rgba(59,130,246,0.3); }
+  50%       { box-shadow: 0 0 32px rgba(59,130,246,0.6); }
+}
+
+@keyframes md-gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.md-animate-fade-up  { animation: md-fade-up 0.5s ease both; }
+.md-animate-fade-in  { animation: md-fade-in 0.4s ease both; }
+.md-animate-pulse-glow { animation: md-pulse-glow 2.5s ease-in-out infinite; }
+
+/* ─── Delay utilities ───────────────────────────────────────────────────── */
+
+.md-delay-100 { animation-delay: 100ms; }
+.md-delay-200 { animation-delay: 200ms; }
+.md-delay-300 { animation-delay: 300ms; }
+.md-delay-400 { animation-delay: 400ms; }
+.md-delay-500 { animation-delay: 500ms; }
+.md-delay-600 { animation-delay: 600ms; }
