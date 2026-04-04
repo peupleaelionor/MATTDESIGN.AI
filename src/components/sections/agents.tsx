@@ -1,5 +1,6 @@
 import { Card, Badge } from "@/components/ui";
 import { AGENT_CONFIGS } from "@/config/agent-config";
+import { AgentIcon } from "@/components/agent-icon";
 
 // ─── Agents Grid Section ──────────────────────────────────────────────────────
 
@@ -37,7 +38,7 @@ export function AgentsSection() {
               <div className="relative flex flex-col gap-3">
                 {/* Icon + number */}
                 <div className="flex items-center justify-between">
-                  <span className="text-2xl">{agent.icon}</span>
+                  <AgentIcon name={agent.icon} className="size-6" style={{ color: agent.color }} />
                   <span className="text-xs font-mono text-slate-600">
                     {String(index + 1).padStart(2, "0")}
                   </span>
