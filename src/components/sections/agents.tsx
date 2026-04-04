@@ -1,16 +1,3 @@
-import {
-  Megaphone,
-  Compass,
-  Palette,
-  Monitor,
-  Images,
-  PenLine,
-  Wrench,
-  ClipboardCheck,
-  SearchCode,
-  Sparkles,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import { Card, Badge } from "@/components/ui";
 import { AGENT_CONFIGS } from "@/config/agent-config";
 import { AgentIcon } from "@/components/agent-icon";

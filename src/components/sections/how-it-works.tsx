@@ -1,15 +1,3 @@
-import {
-  Megaphone,
-  Compass,
-  Palette,
-  Monitor,
-  Images,
-  PenLine,
-  Wrench,
-  ClipboardCheck,
-  SearchCode,
-  Sparkles,
-} from "lucide-react";
 import { Badge } from "@/components/ui";
 import { FileText, Cpu, Download, ArrowRight } from "lucide-react";
 import type { FC } from "react";
