@@ -1,3 +1,15 @@
+import {
+  Megaphone,
+  Compass,
+  Palette,
+  Monitor,
+  Images,
+  PenLine,
+  Wrench,
+  ClipboardCheck,
+  SearchCode,
+  Sparkles,
+} from "lucide-react";
 import { Badge } from "@/components/ui";
 
 // ─── How It Works Section ─────────────────────────────────────────────────────
@@ -75,17 +87,20 @@ export function HowItWorksSection() {
             Pipeline flow
           </p>
           <div className="flex flex-wrap items-center gap-2">
-            {PIPELINE_FLOW.map((step, i) => (
-              <div key={step.label} className="flex items-center gap-2">
-                <div className="flex items-center gap-2 rounded-lg border border-[#1E293B] bg-[#111827] px-3 py-2">
-                  <span className="text-sm">{step.icon}</span>
-                  <span className="text-xs font-medium text-slate-300">{step.label}</span>
+            {PIPELINE_FLOW.map((step, i) => {
+              const { Icon } = step;
+              return (
+                <div key={step.label} className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 rounded-lg border border-[#1E293B] bg-[#111827] px-3 py-2">
+                    <Icon className={`h-3.5 w-3.5 ${step.color}`} strokeWidth={2} />
+                    <span className="text-xs font-medium text-slate-300">{step.label}</span>
+                  </div>
+                  {i < PIPELINE_FLOW.length - 1 && (
+                    <span className="text-slate-700 text-xs">→</span>
+                  )}
                 </div>
-                {i < PIPELINE_FLOW.length - 1 && (
-                  <span className="text-slate-600 text-xs">→</span>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
@@ -94,14 +109,14 @@ export function HowItWorksSection() {
 }
 
 const PIPELINE_FLOW = [
-  { icon: "🎬", label: "Director" },
-  { icon: "🧭", label: "Strategist" },
-  { icon: "🎨", label: "Brand" },
-  { icon: "🖥️", label: "UI/UX" },
-  { icon: "🖼️", label: "Assets" },
-  { icon: "✍️", label: "Copy" },
-  { icon: "🔧", label: "Builder" },
-  { icon: "✅", label: "QA" },
-  { icon: "🔍", label: "Critic" },
-  { icon: "⚡", label: "Optimizer" },
+  { Icon: Megaphone,      label: "Director",   color: "text-blue-400"    },
+  { Icon: Compass,        label: "Strategist", color: "text-violet-400"  },
+  { Icon: Palette,        label: "Brand",      color: "text-pink-400"    },
+  { Icon: Monitor,        label: "UI/UX",      color: "text-sky-400"     },
+  { Icon: Images,         label: "Assets",     color: "text-amber-400"   },
+  { Icon: PenLine,        label: "Copy",       color: "text-emerald-400" },
+  { Icon: Wrench,         label: "Builder",    color: "text-slate-400"   },
+  { Icon: ClipboardCheck, label: "QA",         color: "text-emerald-400" },
+  { Icon: SearchCode,     label: "Critic",     color: "text-red-400"     },
+  { Icon: Sparkles,       label: "Optimizer",  color: "text-blue-400"    },
 ];

@@ -15,6 +15,19 @@ import type {
 } from "@/types";
 import { uid, sleep } from "@/lib/utils";
 import { MD_BRAND_PALETTE, MD_BRAND_TYPOGRAPHY, TONE_DESCRIPTORS } from "@/config/design-tokens";
+import { callClaude, parseJSON } from "@/lib/claude";
+import {
+  DIRECTOR_SYSTEM, directorPrompt,
+  STRATEGIST_SYSTEM, strategistPrompt,
+  BRAND_DESIGNER_SYSTEM, brandDesignerPrompt,
+  UI_DESIGNER_SYSTEM, uiDesignerPrompt,
+  ASSET_GENERATOR_SYSTEM, assetGeneratorPrompt,
+  COPYWRITER_SYSTEM, copywriterPrompt,
+  BUILDER_SYSTEM, builderPrompt,
+  QA_REVIEWER_SYSTEM, qaReviewerPrompt,
+  CRITIC_SYSTEM, criticPrompt,
+  OPTIMIZER_SYSTEM, optimizerPrompt,
+} from "@/prompts/agents";
 
 // ─── MattDESIGN.AI v3 — Agent Implementations ────────────────────────────────
 // Each agent is a pure async function that takes context and returns a typed result.
@@ -40,21 +53,26 @@ export async function runDirector(
   brief: ProjectBrief,
 ): Promise<AgentResult<DirectionResult>> {
   const { data, ms } = await withTiming(async () => {
+    const raw = await callClaude(DIRECTOR_SYSTEM, directorPrompt(brief));
+    if (raw) {
+      const parsed = parseJSON<DirectionResult>(raw, {} as DirectionResult);
+      if (parsed.objective) return parsed;
+    }
+    // ── Mock fallback ──────────────────────────────────────────────────────
     await sleep(200);
     const assumptions: string[] = [];
     if (!brief.sector) assumptions.push("Sector inferred as technology / SaaS");
     if (!brief.audience) assumptions.push("Audience assumed: decision-makers & early adopters");
     if (!brief.style) assumptions.push("Style defaulted to modern, minimal-luxury");
 
-    const result: DirectionResult = {
+    return {
       objective: `Build a premium digital presence for ${brief.projectName} that converts ${brief.audience ?? "prospects"} into customers.`,
       audience: brief.audience ?? "B2B decision-makers, tech-savvy professionals aged 28-45",
       positioning: `${brief.projectName} is positioned as the premium, reliable choice in ${brief.sector ?? "its market"} — combining sophistication with actionable results.`,
       promise: `${brief.projectName} delivers ${brief.description} faster, cleaner and more credibly than any alternative.`,
       creativeAngle: selectCreativeAngle(brief),
       assumptions,
-    };
-    return result;
+    } satisfies DirectionResult;
   });
   return ok("director", data, ms);
 }
@@ -77,8 +95,17 @@ export async function runStrategist(
   direction: DirectionResult,
 ): Promise<AgentResult<Strategy>> {
   const { data, ms } = await withTiming(async () => {
+    const raw = await callClaude(
+      STRATEGIST_SYSTEM,
+      strategistPrompt(brief, JSON.stringify(direction)),
+    );
+    if (raw) {
+      const parsed = parseJSON<Strategy>(raw, {} as Strategy);
+      if (parsed.angle) return parsed;
+    }
+    // ── Mock fallback ──────────────────────────────────────────────────────
     await sleep(200);
-    const result: Strategy = {
+    return {
       angle: direction.creativeAngle,
       messageStructure: [
         `Hook: address the core pain point immediately`,
@@ -107,8 +134,7 @@ export async function runStrategist(
         { stage: "Intent", action: "Clicks primary CTA", emotion: "Ready" },
         { stage: "Action", action: "Completes sign-up / contact form", emotion: "Confident" },
       ],
-    };
-    return result;
+    } satisfies Strategy;
   });
   return ok("strategist", data, ms);
 }
@@ -145,6 +171,15 @@ export async function runBrandDesigner(
   direction: DirectionResult,
 ): Promise<AgentResult<BrandDNA>> {
   const { data, ms } = await withTiming(async () => {
+    const raw = await callClaude(
+      BRAND_DESIGNER_SYSTEM,
+      brandDesignerPrompt(brief, JSON.stringify(direction)),
+    );
+    if (raw) {
+      const parsed = parseJSON<BrandDNA>(raw, {} as BrandDNA);
+      if (parsed.name && parsed.palette) return parsed;
+    }
+    // ── Mock fallback ──────────────────────────────────────────────────────
     await sleep(300);
     const palette = brief.tone === "luxury"
       ? { ...MD_BRAND_PALETTE, primary: "#C9A84C", secondary: "#1A1A2E", accent: "#E8D5B7" }
@@ -152,7 +187,7 @@ export async function runBrandDesigner(
       ? { ...MD_BRAND_PALETTE, primary: "#F59E0B", secondary: "#EC4899", accent: "#06D6A0" }
       : MD_BRAND_PALETTE;
 
-    const result: BrandDNA = {
+    return {
       name: brief.projectName,
       tagline: generateTagline(brief),
       personality: TONE_DESCRIPTORS[brief.tone ?? "professional"] ?? TONE_DESCRIPTORS.professional,
@@ -169,8 +204,7 @@ export async function runBrandDesigner(
         "Icons must be from a single coherent icon family",
         "Typography scale must follow the defined 8pt grid",
       ],
-    };
-    return result;
+    } satisfies BrandDNA;
   });
   return ok("brand-designer", data, ms);
 }
@@ -216,8 +250,17 @@ export async function runUIDesigner(
   strategy: Strategy,
 ): Promise<AgentResult<SiteStructure>> {
   const { data, ms } = await withTiming(async () => {
+    const raw = await callClaude(
+      UI_DESIGNER_SYSTEM,
+      uiDesignerPrompt(brief, JSON.stringify(brand), JSON.stringify(strategy)),
+    );
+    if (raw) {
+      const parsed = parseJSON<SiteStructure>(raw, {} as SiteStructure);
+      if (parsed.pages && parsed.sections) return parsed;
+    }
+    // ── Mock fallback ──────────────────────────────────────────────────────
     await sleep(250);
-    const result: SiteStructure = {
+    return {
       pages: [
         {
           slug: "/",
@@ -250,8 +293,7 @@ export async function runUIDesigner(
         "AgentCard", "FeatureCard", "StepCard", "MetricCard",
         "Header", "Footer", "NavBar",
       ],
-    };
-    return result;
+    } satisfies SiteStructure;
   });
   return ok("ui-designer", data, ms);
 }
@@ -263,52 +305,60 @@ export async function runAssetGenerator(
   brand: BrandDNA,
 ): Promise<AgentResult<{ assets: AssetSpec[]; prompts: ImagePrompt[] }>> {
   const { data, ms } = await withTiming(async () => {
+    const raw = await callClaude(
+      ASSET_GENERATOR_SYSTEM,
+      assetGeneratorPrompt(brief, JSON.stringify(brand)),
+    );
+    if (raw) {
+      const parsed = parseJSON<{ assets: AssetSpec[]; prompts: ImagePrompt[] }>(raw, { assets: [], prompts: [] });
+      if (parsed.assets?.length) return parsed;
+    }
+    // ── Mock fallback ──────────────────────────────────────────────────────
     await sleep(200);
     const name = brief.projectName;
     const style = brand.visualStyle;
 
-    const assets: AssetSpec[] = [
-      { id: "logo-primary", name: "Logo Primary", role: "Main brand logo (dark bg)", format: "SVG + PNG", priority: "critical", dimensions: "200×60px", variants: ["white", "colour", "monochrome"] },
-      { id: "favicon", name: "Favicon", role: "Browser tab icon", format: "ICO + PNG", priority: "critical", dimensions: "32×32, 64×64, 180×180px" },
-      { id: "hero-image", name: "Hero Image", role: "Full-width hero background", format: "WebP", priority: "critical", dimensions: "1920×1080px", variants: ["mobile 390×844"] },
-      { id: "og-image", name: "OG Social Image", role: "Social sharing preview", format: "PNG", priority: "high", dimensions: "1200×630px" },
-      { id: "agent-icons", name: "Agent Icons", role: "Icon per agent (8 total)", format: "SVG", priority: "high", dimensions: "48×48px", variants: ["filled", "outline"] },
-      { id: "feature-illustrations", name: "Feature Illustrations", role: "Abstract illustration per feature", format: "SVG / WebP", priority: "medium", dimensions: "400×300px" },
-      { id: "mockup-laptop", name: "Laptop Mockup", role: "Product screenshot mockup", format: "PNG / WebP", priority: "medium", dimensions: "1200×800px" },
-      { id: "texture-bg", name: "Background Texture", role: "Subtle noise texture overlay", format: "PNG", priority: "low", dimensions: "512×512px (tile)" },
-    ];
-
-    const prompts: ImagePrompt[] = [
-      {
-        id: "hero-prompt",
-        name: "Hero Image",
-        prompt: `Abstract dark tech landscape, floating UI components, electric blue and violet gradients, depth of field, cinematic, 8K, ultra-detailed, representing ${name}: ${brief.description}. ${style}. No text, no logos.`,
-        negativePrompt: "text, watermark, logo, low quality, blurry, bright white background",
-        style: "cinematic, dark, premium",
-        model: "Stable Diffusion XL",
-        dimensions: "1920×1080",
-      },
-      {
-        id: "og-prompt",
-        name: "OG Social Image",
-        prompt: `Premium dark banner for ${name}. Abstract gradient from #3B82F6 to #7C3AED, geometric minimal composition, professional, social media ready. No text.`,
-        negativePrompt: "text, watermark, busy, cluttered",
-        style: "minimal, gradient, dark",
-        model: "Stable Diffusion XL",
-        dimensions: "1200×630",
-      },
-      {
-        id: "feature-illustration",
-        name: "Feature Illustration",
-        prompt: `Isometric abstract illustration of AI-powered design workflow. Dark background, neon blue and violet accents, clean geometric shapes, premium quality, 4K render. No text.`,
-        negativePrompt: "text, logo, realistic photo, bright white",
-        style: "isometric, abstract, neon",
-        model: "Stable Diffusion XL",
-        dimensions: "800×600",
-      },
-    ];
-
-    return { assets, prompts };
+    return {
+      assets: [
+        { id: "logo-primary", name: "Logo Primary", role: "Main brand logo (dark bg)", format: "SVG + PNG", priority: "critical", dimensions: "200×60px", variants: ["white", "colour", "monochrome"] },
+        { id: "favicon", name: "Favicon", role: "Browser tab icon", format: "ICO + PNG", priority: "critical", dimensions: "32×32, 64×64, 180×180px" },
+        { id: "hero-image", name: "Hero Image", role: "Full-width hero background", format: "WebP", priority: "critical", dimensions: "1920×1080px", variants: ["mobile 390×844"] },
+        { id: "og-image", name: "OG Social Image", role: "Social sharing preview", format: "PNG", priority: "high", dimensions: "1200×630px" },
+        { id: "agent-icons", name: "Agent Icons", role: "Icon per agent (10 total)", format: "SVG", priority: "high", dimensions: "48×48px", variants: ["filled", "outline"] },
+        { id: "feature-illustrations", name: "Feature Illustrations", role: "Abstract illustration per feature", format: "SVG / WebP", priority: "medium", dimensions: "400×300px" },
+        { id: "mockup-laptop", name: "Laptop Mockup", role: "Product screenshot mockup", format: "PNG / WebP", priority: "medium", dimensions: "1200×800px" },
+        { id: "texture-bg", name: "Background Texture", role: "Subtle noise texture overlay", format: "PNG", priority: "low", dimensions: "512×512px (tile)" },
+      ] as AssetSpec[],
+      prompts: [
+        {
+          id: "hero-prompt",
+          name: "Hero Image",
+          prompt: `Abstract dark tech landscape, floating geometric UI fragments, electric blue and violet light trails, cinematic depth of field, photorealistic 8K render representing ${name}: ${brief.description}. ${style}. No text, no logos, no faces.`,
+          negativePrompt: "text, watermark, logo, low quality, blurry, bright white background, people, faces",
+          style: "cinematic, dark, premium",
+          model: "Stable Diffusion XL",
+          dimensions: "1920×1080",
+        },
+        {
+          id: "og-prompt",
+          name: "OG Social Image",
+          prompt: `Premium dark abstract banner for ${name}. Smooth gradient from deep blue to violet, subtle geometric shapes, professional minimal composition. No text, no logos.`,
+          negativePrompt: "text, watermark, busy, cluttered, faces",
+          style: "minimal, gradient, dark",
+          model: "Stable Diffusion XL",
+          dimensions: "1200×630",
+        },
+        {
+          id: "feature-illustration",
+          name: "Feature Illustration",
+          prompt: `Abstract isometric digital illustration: AI agent workflow with connected nodes, data streams, dark background, neon blue and violet accents, ultra-detailed clean geometry, premium quality 4K. No text.`,
+          negativePrompt: "text, logo, realistic photo, bright white, low quality",
+          style: "isometric, abstract, neon",
+          model: "Stable Diffusion XL",
+          dimensions: "800×600",
+        },
+      ] as ImagePrompt[],
+    };
   });
   return ok("asset-generator", data, ms);
 }
@@ -321,6 +371,21 @@ export async function runCopywriter(
   strategy: Strategy,
 ): Promise<AgentResult<SiteCopy>> {
   const { data, ms } = await withTiming(async () => {
+    const raw = await callClaude(
+      COPYWRITER_SYSTEM,
+      copywriterPrompt(
+        brief,
+        JSON.stringify(brand),
+        JSON.stringify(strategy),
+        JSON.stringify(["hero", "features", "how-it-works", "social-proof", "cta", "faq", "footer"]),
+      ),
+      6000,
+    );
+    if (raw) {
+      const parsed = parseJSON<SiteCopy>(raw, {} as SiteCopy);
+      if (parsed.hero?.headline) return parsed;
+    }
+    // ── Mock fallback ──────────────────────────────────────────────────────
     await sleep(300);
     const name = brief.projectName;
 
@@ -439,7 +504,7 @@ export async function runCopywriter(
       },
     };
     return result;
-  });
+  });  // closes the mock branch
   return ok("copywriter", data, ms);
 }
 
@@ -460,6 +525,22 @@ export async function runBuilder(
   brief: ProjectBrief,
 ): Promise<AgentResult<{ stack: TechStack; executionPlan: ExecutionStep[] }>> {
   const { data, ms } = await withTiming(async () => {
+    const raw = await callClaude(
+      BUILDER_SYSTEM,
+      builderPrompt(brief, JSON.stringify({ sector: brief.sector })),
+    );
+    if (raw) {
+      // Claude may return either { stack: {...}, executionPlan: [...] } or flat { design, build, ... executionPlan }
+      const parsed = parseJSON<Record<string, unknown>>(raw, {});
+      const hasStack = parsed.stack && parsed.executionPlan;
+      const hasFlat = parsed.build && parsed.executionPlan;
+      if (hasStack) return parsed as unknown as { stack: TechStack; executionPlan: ExecutionStep[] };
+      if (hasFlat) {
+        const { executionPlan, ...stackFields } = parsed;
+        return { stack: stackFields as unknown as TechStack, executionPlan: executionPlan as ExecutionStep[] };
+      }
+    }
+    // ── Mock fallback ──────────────────────────────────────────────────────
     await sleep(200);
     const stack: TechStack = {
       design: [
@@ -509,6 +590,17 @@ export async function runQAReviewer(
   results: Partial<import("@/types").PipelineResults>,
 ): Promise<AgentResult<CritiqueResult>> {
   const { data, ms } = await withTiming(async () => {
+    const summary = {
+      brand: results.brand ? { name: results.brand.name, tagline: results.brand.tagline } : undefined,
+      copy: results.copy ? { hero: results.copy.hero } : undefined,
+      structure: results.structure ? { sections: results.structure.sections?.length } : undefined,
+    };
+    const raw = await callClaude(QA_REVIEWER_SYSTEM, qaReviewerPrompt(JSON.stringify(summary)));
+    if (raw) {
+      const parsed = parseJSON<CritiqueResult>(raw, {} as CritiqueResult);
+      if (parsed.overallScore !== undefined) return parsed;
+    }
+    // ── Mock fallback ──────────────────────────────────────────────────────
     await sleep(300);
     const result: CritiqueResult = {
       overallScore: 82,
@@ -545,6 +637,17 @@ export async function runCritic(
   previousScore?: number,
 ): Promise<AgentResult<CritiqueResult>> {
   const { data, ms } = await withTiming(async () => {
+    const summary = {
+      brand: results.brand ? { tagline: results.brand.tagline, palette: results.brand.palette } : undefined,
+      copy: results.copy ? { hero: results.copy.hero, sections: Object.keys(results.copy.sections ?? {}) } : undefined,
+      structure: results.structure?.sections?.length,
+    };
+    const raw = await callClaude(CRITIC_SYSTEM, criticPrompt(JSON.stringify(summary), previousScore));
+    if (raw) {
+      const parsed = parseJSON<CritiqueResult>(raw, {} as CritiqueResult);
+      if (parsed.overallScore !== undefined) return parsed;
+    }
+    // ── Mock fallback ──────────────────────────────────────────────────────
     await sleep(200);
     const base = previousScore ?? 82;
     // Critic is tougher than QA
@@ -583,6 +686,19 @@ export async function runOptimizer(
   critique: CritiqueResult,
 ): Promise<AgentResult<ImprovementResult>> {
   const { data, ms } = await withTiming(async () => {
+    const summary = {
+      copy: results.copy ? { hero: results.copy.hero } : undefined,
+      brand: results.brand ? { tagline: results.brand.tagline } : undefined,
+    };
+    const raw = await callClaude(
+      OPTIMIZER_SYSTEM,
+      optimizerPrompt(JSON.stringify(summary), JSON.stringify(critique)),
+    );
+    if (raw) {
+      const parsed = parseJSON<ImprovementResult>(raw, {} as ImprovementResult);
+      if (parsed.applied?.length) return parsed;
+    }
+    // ── Mock fallback ──────────────────────────────────────────────────────
     await sleep(200);
     const improvements: string[] = [];
 
