@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import {
   Button,
   Input,
@@ -42,6 +42,7 @@ export default function GeneratePage() {
   const [pipeline, setPipeline] = useState<PipelineState | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [activeTab, setActiveTab] = useState("brand");
+  const abortRef = useRef<AbortController | null>(null);
 
   // ── Validation ────────────────────────────────────────────────────────────
 
@@ -53,28 +54,82 @@ export default function GeneratePage() {
     return Object.keys(next).length === 0;
   }
 
-  // ── Submit ────────────────────────────────────────────────────────────────
+  // ── Stream handler ────────────────────────────────────────────────────────
 
-  async function handleGenerate() {
+  const handleGenerate = useCallback(async () => {
     if (!validate()) return;
+
+    abortRef.current = new AbortController();
     setStep("generating");
+    setPipeline(null);
+    setErrors({});
 
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(brief),
+        signal: abortRef.current.signal,
       });
 
-      if (!res.ok) throw new Error("Generation failed");
-      const state = (await res.json()) as PipelineState;
-      setPipeline(state);
-      setStep("results");
-    } catch {
+      if (!res.ok || !res.body) {
+        throw new Error("Stream unavailable");
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
+
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          try {
+            const state = JSON.parse(line.slice(6)) as PipelineState;
+            setPipeline(state);
+            if (state.status === "complete") {
+              setStep("results");
+              return;
+            }
+            if (state.status === "error") {
+              throw new Error("Pipeline error");
+            }
+          } catch (parseErr) {
+            // Skip malformed events
+          }
+        }
+      }
+
+      // If stream ends without complete status, check last state
+      setPipeline((prev) => {
+        if (prev && prev.status !== "complete") {
+          const updated = { ...prev, status: "complete" as const };
+          setStep("results");
+          return updated;
+        }
+        return prev;
+      });
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === "AbortError") return;
+      console.error("[Generate]", err);
       setErrors({ submit: "Something went wrong. Please try again." });
       setStep("brief");
     }
-  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [brief]);
+
+  const handleReset = useCallback(() => {
+    abortRef.current?.abort();
+    setStep("brief");
+    setPipeline(null);
+    setErrors({});
+  }, []);
 
   return (
     <main className="min-h-screen pt-24 pb-16">
@@ -91,7 +146,6 @@ export default function GeneratePage() {
           </p>
         </div>
 
-        {/* Steps */}
         {step === "brief" && (
           <BriefForm
             brief={brief}
@@ -102,7 +156,7 @@ export default function GeneratePage() {
         )}
 
         {step === "generating" && (
-          <GeneratingView brief={brief} />
+          <GeneratingView pipeline={pipeline} brief={brief} />
         )}
 
         {step === "results" && pipeline && (
@@ -110,10 +164,7 @@ export default function GeneratePage() {
             pipeline={pipeline}
             activeTab={activeTab}
             onTabChange={setActiveTab}
-            onReset={() => {
-              setStep("brief");
-              setPipeline(null);
-            }}
+            onReset={handleReset}
           />
         )}
       </div>
@@ -138,7 +189,9 @@ function BriefForm({
     <Card className="mx-auto max-w-2xl">
       <div className="flex flex-col gap-6">
         <div className="flex items-center gap-3 pb-4 border-b border-[#1E293B]">
-          <span className="text-2xl">📋</span>
+          <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-sm font-bold text-white flex-shrink-0">
+            01
+          </div>
           <div>
             <h2 className="font-semibold text-white">Project Brief</h2>
             <p className="text-xs text-slate-500">Even a sentence is enough to start</p>
@@ -197,7 +250,7 @@ function BriefForm({
 
           <div className="sm:col-span-2">
             <Input
-              label="Style"
+              label="Visual style"
               placeholder="e.g. dark UI, editorial, minimal, glassmorphism"
               value={brief.style ?? ""}
               onChange={(e) => onChange({ style: e.target.value })}
@@ -226,51 +279,85 @@ function BriefForm({
   );
 }
 
-// ─── Generating View ──────────────────────────────────────────────────────────
+// ─── Generating View — Live streaming progress ────────────────────────────────
 
-function GeneratingView({ brief }: { brief: Partial<ProjectBrief> }) {
+function GeneratingView({
+  pipeline,
+  brief,
+}: {
+  pipeline: PipelineState | null;
+  brief: Partial<ProjectBrief>;
+}) {
+  const completed = pipeline?.completedAgents ?? [];
+  const current = pipeline?.currentAgent;
+  const progress = pipeline
+    ? Math.round((completed.length / 10) * 100)
+    : 0;
+
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <Card className="text-center py-10">
-        <div className="flex flex-col items-center gap-6">
+    <div className="mx-auto max-w-2xl space-y-4">
+      {/* Status card */}
+      <Card className="text-center py-8">
+        <div className="flex flex-col items-center gap-5">
           <div className="relative">
             <div className="h-16 w-16 rounded-full border-4 border-blue-500/20 border-t-blue-500 animate-spin" />
             <span className="absolute inset-0 flex items-center justify-center text-2xl">⚡</span>
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-white mb-2">
-              Generating <span className="text-blue-400">{brief.projectName}</span>
+            <h2 className="text-xl font-semibold text-white mb-1">
+              Generating{" "}
+              <span className="text-blue-400">{brief.projectName}</span>
             </h2>
-            <p className="text-sm text-slate-400">10 agents are working on your project…</p>
+            <p className="text-sm text-slate-400">
+              {current
+                ? `${AGENT_CONFIGS.find((a) => a.id === current)?.name ?? current} is running…`
+                : completed.length === 10
+                ? "Pipeline complete ✓"
+                : "Initialising pipeline…"}
+            </p>
           </div>
-          <Progress value={45} showValue label="Pipeline progress" className="w-full max-w-xs" />
+          <Progress
+            value={progress}
+            showValue
+            label="Pipeline progress"
+            className="w-full max-w-xs"
+          />
         </div>
       </Card>
 
       {/* Agent status list */}
-      <div className="space-y-2">
-        {AGENT_CONFIGS.map((agent, i) => (
-          <div
-            key={agent.id}
-            className={cn(
-              "flex items-center gap-3 rounded-lg border px-4 py-3 transition-all",
-              i === 4
-                ? "border-blue-500/50 bg-blue-500/10"
-                : i < 4
-                ? "border-[#1E293B] bg-[#111827] opacity-60"
-                : "border-[#1E293B]/50 bg-transparent opacity-30",
-            )}
-          >
-            <AgentIcon name={agent.icon} className="size-5" style={{ color: agent.color }} />
-            <span className="text-sm font-medium text-slate-300 flex-1">{agent.name}</span>
-            <span className={cn(
-              "text-xs",
-              i === 4 ? "text-blue-400 animate-pulse" : i < 4 ? "text-emerald-400" : "text-slate-600",
-            )}>
-              {i === 4 ? "Running…" : i < 4 ? "Done ✓" : "Waiting"}
-            </span>
-          </div>
-        ))}
+      <div className="space-y-1.5">
+        {AGENT_CONFIGS.map((agent) => {
+          const isDone = completed.includes(agent.id as never);
+          const isRunning = current === agent.id;
+          const isPending = !isDone && !isRunning;
+
+          return (
+            <div
+              key={agent.id}
+              className={cn(
+                "flex items-center gap-3 rounded-lg border px-4 py-2.5 transition-all duration-300",
+                isRunning && "border-blue-500/50 bg-blue-500/10 shadow-[0_0_12px_rgba(59,130,246,0.15)]",
+                isDone && "border-[#1E293B] bg-[#111827]/60",
+                isPending && "border-[#1E293B]/40 bg-transparent opacity-30",
+              )}
+            >
+              <AgentIcon name={agent.icon} className="size-5" style={{ color: agent.color }} />
+              <span className={cn(
+                "text-sm font-medium flex-1",
+                isRunning ? "text-white" : isDone ? "text-slate-300" : "text-slate-600",
+              )}>
+                {agent.name}
+              </span>
+              <span className={cn(
+                "text-xs font-medium",
+                isRunning ? "text-blue-400 animate-pulse" : isDone ? "text-emerald-400" : "text-slate-700",
+              )}>
+                {isRunning ? "Running…" : isDone ? "Done ✓" : "Waiting"}
+              </span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -279,12 +366,12 @@ function GeneratingView({ brief }: { brief: Partial<ProjectBrief> }) {
 // ─── Results View ─────────────────────────────────────────────────────────────
 
 const RESULT_TABS = [
-  { id: "brand", label: "🎨 Brand DNA" },
-  { id: "structure", label: "🖥️ Structure" },
-  { id: "copy", label: "✍️ Copy" },
-  { id: "assets", label: "🖼️ Assets" },
-  { id: "stack", label: "🔧 Stack" },
-  { id: "qa", label: "✅ QA Report" },
+  { id: "brand", label: "Brand DNA" },
+  { id: "structure", label: "Structure" },
+  { id: "copy", label: "Copy" },
+  { id: "assets", label: "Assets" },
+  { id: "stack", label: "Stack" },
+  { id: "qa", label: "QA Report" },
 ];
 
 function ResultsView({
@@ -302,13 +389,13 @@ function ResultsView({
   const score = (critique?.overallScore ?? 0) + (improvement?.scoreGain ?? 0);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Summary bar */}
       <Card className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
         <div className="flex items-center gap-4">
           <ScoreRing score={score} size={72} />
           <div>
-            <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Final score</p>
+            <p className="text-xs text-slate-500 uppercase tracking-wider mb-0.5">Final score</p>
             <h2 className="text-xl font-bold text-white">
               {results.brand?.name ?? pipeline.brief.projectName}
             </h2>
@@ -318,33 +405,47 @@ function ResultsView({
 
         <div className="flex-1" />
 
-        <div className="flex items-center gap-3 flex-wrap">
-          {improvement?.applied?.length && (
-            <Badge variant="accent" dot>{improvement.applied.length} improvements applied</Badge>
-          )}
+        <div className="flex items-center gap-2.5 flex-wrap">
+          {improvement?.applied?.length ? (
+            <Badge variant="accent" dot>
+              {improvement.applied.length} improvements applied
+            </Badge>
+          ) : null}
           <Badge variant="muted">
             {pipeline.completedAgents.length}/10 agents
           </Badge>
           <Button size="sm" variant="outline" onClick={onReset}>
             ← New project
           </Button>
-          <Button size="sm" variant="primary">
-            Export →
+          <Button
+            size="sm"
+            variant="primary"
+            onClick={() => {
+              const blob = new Blob([JSON.stringify(pipeline, null, 2)], { type: "application/json" });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = `${results.brand?.name ?? "project"}-mattdesign.json`;
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+          >
+            Export JSON →
           </Button>
         </div>
       </Card>
 
       {/* Tabs */}
-      <div className="flex gap-1 overflow-x-auto pb-1 scrollbar-none">
+      <div className="flex gap-1 overflow-x-auto pb-1 scrollbar-none border-b border-[#1E293B]">
         {RESULT_TABS.map((tab) => (
           <button
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
             className={cn(
-              "flex-shrink-0 rounded-lg px-4 py-2 text-sm font-medium transition-all",
+              "flex-shrink-0 px-4 py-2.5 text-sm font-medium transition-all border-b-2 -mb-px",
               activeTab === tab.id
-                ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                : "text-slate-400 hover:text-white hover:bg-white/5",
+                ? "border-blue-500 text-blue-400"
+                : "border-transparent text-slate-400 hover:text-white",
             )}
           >
             {tab.label}
@@ -384,11 +485,12 @@ function BrandTab({ brand, direction }: { brand?: import("@/types").BrandDNA; di
       <Section title="Colour Palette">
         <div className="flex flex-wrap gap-3">
           {Object.entries(brand.palette).map(([key, color]) => (
-            <div key={key} className="flex flex-col items-center gap-2">
+            <div key={key} className="flex flex-col items-center gap-1.5">
               <div
-                className="h-12 w-12 rounded-xl border border-white/10 shadow-lg"
+                className="h-12 w-12 rounded-xl border border-white/10 shadow-lg cursor-pointer"
                 style={{ background: color }}
                 title={color}
+                onClick={() => navigator.clipboard.writeText(color).catch(() => {})}
               />
               <span className="text-xs text-slate-500">{key}</span>
               <span className="text-xs font-mono text-slate-400">{color}</span>
@@ -461,10 +563,10 @@ function StructureTab({ structure }: { structure?: import("@/types").SiteStructu
       </Section>
 
       <Section title="Sections">
-        <div className="space-y-3">
+        <div className="space-y-2">
           {structure.sections.sort((a, b) => a.order - b.order).map((section) => (
             <div key={section.id} className="flex items-start gap-4 py-2 border-b border-[#1E293B] last:border-0">
-              <span className="text-xs font-mono text-slate-600 w-6 flex-shrink-0">
+              <span className="text-xs font-mono text-slate-600 w-6 flex-shrink-0 mt-0.5">
                 {String(section.order).padStart(2, "0")}
               </span>
               <Badge variant="violet" className="flex-shrink-0">{section.type}</Badge>
@@ -507,6 +609,7 @@ function CopyTab({ copy }: { copy?: import("@/types").SiteCopy }) {
         <div className="grid grid-cols-1 gap-3">
           <KeyValue label="Title" value={copy.meta.title} />
           <KeyValue label="Description" value={copy.meta.description} />
+          {copy.meta.ogTitle && <KeyValue label="OG Title" value={copy.meta.ogTitle} />}
         </div>
       </Section>
 
@@ -517,7 +620,7 @@ function CopyTab({ copy }: { copy?: import("@/types").SiteCopy }) {
             <p className="text-lg font-bold text-white whitespace-pre-line">{copy.hero.headline}</p>
           </div>
           <KeyValue label="Subheadline" value={copy.hero.subheadline} />
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-wrap">
             <Badge variant="default">{copy.hero.cta.primary}</Badge>
             {copy.hero.cta.secondary && <Badge variant="muted">{copy.hero.cta.secondary}</Badge>}
           </div>
@@ -530,12 +633,12 @@ function CopyTab({ copy }: { copy?: import("@/types").SiteCopy }) {
       {Object.entries(copy.sections).map(([id, section]) => (
         <Section key={id} title={`Section: ${id}`}>
           <div className="space-y-3">
-            <KeyValue label="Headline" value={section.headline} />
+            {section.headline && <KeyValue label="Headline" value={section.headline} />}
             {section.subheadline && <KeyValue label="Subheadline" value={section.subheadline} />}
             {section.body && <KeyValue label="Body" value={section.body} />}
             {section.items && (
               <div>
-                <p className="text-xs text-slate-500 mb-2">Items</p>
+                <p className="text-xs text-slate-500 mb-2">Items ({section.items.length})</p>
                 <div className="space-y-2">
                   {section.items.map((item, i) => (
                     <div key={i} className="rounded-lg bg-[#0A0F1E] px-3 py-2">
@@ -548,7 +651,7 @@ function CopyTab({ copy }: { copy?: import("@/types").SiteCopy }) {
             )}
             {section.faq && (
               <div>
-                <p className="text-xs text-slate-500 mb-2">FAQ</p>
+                <p className="text-xs text-slate-500 mb-2">FAQ ({section.faq.length} items)</p>
                 <div className="space-y-2">
                   {section.faq.map((faq, i) => (
                     <div key={i} className="rounded-lg bg-[#0A0F1E] px-3 py-2">
@@ -589,7 +692,7 @@ function AssetsTab({ assets, prompts }: { assets?: import("@/types").AssetSpec[]
                 </div>
                 <p className="text-xs text-slate-400 mt-1">{asset.role}</p>
                 {asset.variants && (
-                  <div className="flex gap-1 mt-1.5">
+                  <div className="flex gap-1 mt-1.5 flex-wrap">
                     {asset.variants.map((v) => (
                       <span key={v} className="text-xs text-slate-600 bg-[#0A0F1E] px-1.5 py-0.5 rounded">{v}</span>
                     ))}
@@ -613,7 +716,7 @@ function AssetsTab({ assets, prompts }: { assets?: import("@/types").AssetSpec[]
                 </div>
                 <div>
                   <p className="text-xs text-slate-500 mb-1">Prompt</p>
-                  <p className="text-sm text-slate-300 leading-relaxed font-mono text-xs">
+                  <p className="text-xs text-slate-300 leading-relaxed font-mono">
                     {prompt.prompt}
                   </p>
                 </div>
@@ -623,6 +726,12 @@ function AssetsTab({ assets, prompts }: { assets?: import("@/types").AssetSpec[]
                     <p className="text-xs text-red-400/70 font-mono">{prompt.negativePrompt}</p>
                   </div>
                 )}
+                <button
+                  onClick={() => navigator.clipboard.writeText(prompt.prompt).catch(() => {})}
+                  className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                >
+                  Copy prompt →
+                </button>
               </div>
             ))}
           </div>
@@ -643,9 +752,9 @@ function StackTab({ stack, plan }: { stack?: import("@/types").TechStack; plan?:
           <div className="space-y-2">
             {(tools as import("@/types").StackTool[]).map((tool) => (
               <div key={tool.name} className="flex items-center gap-3 py-2 border-b border-[#1E293B] last:border-0">
-                <Badge variant={costColor[tool.cost]}>{tool.cost}</Badge>
+                <Badge variant={costColor[tool.cost as keyof typeof costColor] ?? "muted"}>{tool.cost}</Badge>
                 <span className="text-sm font-medium text-white flex-1">{tool.name}</span>
-                <span className="text-xs text-slate-400">{tool.purpose}</span>
+                <span className="text-xs text-slate-400 text-right hidden sm:block">{tool.purpose}</span>
               </div>
             ))}
           </div>
@@ -661,7 +770,7 @@ function StackTab({ stack, plan }: { stack?: import("@/types").TechStack; plan?:
                   {step.phase}
                 </div>
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
+                  <div className="flex items-center gap-3 mb-1.5">
                     <span className="text-sm font-medium text-white">{step.name}</span>
                     <span className="text-xs text-slate-600">{step.estimatedTime}</span>
                   </div>
@@ -684,29 +793,29 @@ function StackTab({ stack, plan }: { stack?: import("@/types").TechStack; plan?:
 
 function QATab({ critique, improvement }: { critique?: import("@/types").CritiqueResult; improvement?: import("@/types").ImprovementResult }) {
   if (!critique) return <EmptyTab />;
+  const finalScore = critique.overallScore + (improvement?.scoreGain ?? 0);
 
   return (
     <div className="space-y-6">
       <Section title="Overall Score">
         <div className="flex items-center gap-6">
-          <ScoreRing
-            score={critique.overallScore + (improvement?.scoreGain ?? 0)}
-            size={88}
-          />
+          <ScoreRing score={finalScore} size={88} />
           <div className="space-y-1">
             <p className="text-sm text-slate-400">
-              Base: <span className="text-white">{critique.overallScore}</span>
-              {improvement?.scoreGain ? ` + ${improvement.scoreGain} (optimizer)` : ""}
+              Base: <span className="text-white font-medium">{critique.overallScore}</span>
+              {improvement?.scoreGain ? (
+                <span className="text-emerald-400"> +{improvement.scoreGain} optimizer</span>
+              ) : null}
             </p>
             {improvement?.summary && (
-              <p className="text-xs text-slate-500">{improvement.summary}</p>
+              <p className="text-xs text-slate-500 max-w-xs">{improvement.summary}</p>
             )}
           </div>
         </div>
       </Section>
 
       <Section title="Dimensions">
-        <div className="space-y-3">
+        <div className="space-y-4">
           {critique.dimensions.map((dim) => (
             <div key={dim.name} className="space-y-1.5">
               <div className="flex items-center justify-between">
@@ -734,27 +843,31 @@ function QATab({ critique, improvement }: { critique?: import("@/types").Critiqu
         </Section>
       )}
 
-      <Section title="Warnings">
-        <ul className="space-y-1">
-          {critique.warnings.map((w, i) => (
-            <li key={i} className="text-sm text-amber-400 flex items-start gap-2">
-              <span className="flex-shrink-0">⚠</span> {w}
-            </li>
-          ))}
-        </ul>
-      </Section>
+      {critique.warnings.length > 0 && (
+        <Section title="Warnings">
+          <ul className="space-y-1">
+            {critique.warnings.map((w, i) => (
+              <li key={i} className="text-sm text-amber-400 flex items-start gap-2">
+                <span className="flex-shrink-0">⚠</span> {w}
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )}
 
-      <Section title="Passed">
-        <ul className="space-y-1">
-          {critique.passed.map((p, i) => (
-            <li key={i} className="text-sm text-emerald-400 flex items-start gap-2">
-              <span className="flex-shrink-0">✓</span> {p}
-            </li>
-          ))}
-        </ul>
-      </Section>
+      {critique.passed.length > 0 && (
+        <Section title="Passed">
+          <ul className="space-y-1">
+            {critique.passed.map((p, i) => (
+              <li key={i} className="text-sm text-emerald-400 flex items-start gap-2">
+                <span className="flex-shrink-0">✓</span> {p}
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )}
 
-      {improvement && improvement.applied.length > 0 && (
+      {improvement?.applied?.length ? (
         <Section title="Optimizer Applied">
           <ul className="space-y-1">
             {improvement.applied.map((a, i) => (
@@ -764,7 +877,7 @@ function QATab({ critique, improvement }: { critique?: import("@/types").Critiqu
             ))}
           </ul>
         </Section>
-      )}
+      ) : null}
     </div>
   );
 }
@@ -774,7 +887,9 @@ function QATab({ critique, improvement }: { critique?: import("@/types").Critiqu
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">{title}</h3>
+      <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3 pb-2 border-b border-[#1E293B]">
+        {title}
+      </h3>
       {children}
     </div>
   );
