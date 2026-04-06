@@ -191,7 +191,7 @@ function buildPipelineSteps(
 
   // Step 8: Segmentation / cutout (if needed)
   if (brief.needsMask || needsBackgroundRemoval(brief.objectiveType)) {
-    const segTool = brief.needsMask ? "sam2" as DesignToolId : "rembg" as DesignToolId;
+    const segTool: DesignToolId = brief.needsMask ? "sam2" : "rembg";
     steps.push({
       order: ++order,
       name: "Segment / remove background",
