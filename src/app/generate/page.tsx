@@ -14,6 +14,9 @@ import {
 import type { ProjectBrief, PipelineState } from "@/types";
 import { AGENT_CONFIGS } from "@/config/agent-config";
 import { AgentIcon } from "@/components/agent-icon";
+import { ExportPanel } from "@/components/dashboard/export-panel";
+import { LicensePanel } from "@/components/dashboard/license-panel";
+import { getManifest, auditManifest, registerAIGeneratedAssets } from "@/lib/license-manifest";
 import { cn } from "@/lib/utils";
 
 // ─── Generate Page ────────────────────────────────────────────────────────────
@@ -372,6 +375,8 @@ const RESULT_TABS = [
   { id: "assets", label: "Assets" },
   { id: "stack", label: "Stack" },
   { id: "qa", label: "QA Report" },
+  { id: "export", label: "Export" },
+  { id: "license", label: "License" },
 ];
 
 function ResultsView({
@@ -461,6 +466,8 @@ function ResultsView({
         {activeTab === "assets" && <AssetsTab assets={results.assets} prompts={results.prompts} />}
         {activeTab === "stack" && <StackTab stack={results.stack} plan={results.executionPlan} />}
         {activeTab === "qa" && <QATab critique={critique} improvement={improvement} />}
+        {activeTab === "export" && <ExportPanel state={pipeline} />}
+        {activeTab === "license" && <LicenseTabWrapper pipelineId={pipeline.id} assets={results.assets} />}
       </Card>
     </div>
   );
@@ -910,4 +917,22 @@ function EmptyTab() {
       No data available for this section.
     </div>
   );
+}
+
+function LicenseTabWrapper({ pipelineId, assets }: { pipelineId: string; assets?: import("@/types").AssetSpec[] }) {
+  // Auto-register AI-generated assets when viewing license tab
+  if (assets && assets.length > 0) {
+    const existing = getManifest(pipelineId);
+    if (existing.entries.length === 0) {
+      registerAIGeneratedAssets(
+        pipelineId,
+        assets.map((a) => ({ name: a.name, type: "image" as const })),
+      );
+    }
+  }
+
+  const manifest = getManifest(pipelineId);
+  const audit = auditManifest(pipelineId);
+
+  return <LicensePanel manifest={manifest} audit={audit} />;
 }
