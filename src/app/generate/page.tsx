@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import {
   Button,
   Input,
@@ -33,6 +33,8 @@ const LANG_OPTIONS = [
   { value: "fr", label: "Français" },
 ];
 
+type PipelineMode = "ai" | "demo" | null;
+
 export default function GeneratePage() {
   const [step, setStep] = useState<Step>("brief");
   const [brief, setBrief] = useState<Partial<ProjectBrief>>({
@@ -42,7 +44,15 @@ export default function GeneratePage() {
   const [pipeline, setPipeline] = useState<PipelineState | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [activeTab, setActiveTab] = useState("brand");
+  const [mode, setMode] = useState<PipelineMode>(null);
   const abortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    fetch("/api/status")
+      .then((r) => r.json())
+      .then((d) => setMode(d?.pipeline?.mode ?? "demo"))
+      .catch(() => setMode("demo"));
+  }, []);
 
   // ── Validation ────────────────────────────────────────────────────────────
 
@@ -136,14 +146,29 @@ export default function GeneratePage() {
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         {/* Page header */}
         <div className="flex flex-col items-center text-center mb-12">
-          <Badge variant="accent" dot className="mb-4">Generator</Badge>
+          <div className="flex items-center gap-2 mb-4">
+            <Badge variant="accent" dot>Generator</Badge>
+            {mode === "ai" && (
+              <Badge variant="default" dot>AI mode — Claude active</Badge>
+            )}
+            {mode === "demo" && (
+              <Badge variant="muted">Demo mode</Badge>
+            )}
+          </div>
           <h1 className="md-heading text-3xl md:text-4xl text-white">
             Generate your{" "}
             <span className="md-gradient-text">premium project</span>
           </h1>
           <p className="mt-3 text-slate-400 max-w-lg">
-            Fill in the brief. The pipeline does the rest.
+            {mode === "demo"
+              ? "Running in demo mode — add ANTHROPIC_API_KEY to enable real AI generation."
+              : "Fill in the brief. The pipeline does the rest."}
           </p>
+          {mode === "demo" && (
+            <a href="/docs#configuration" className="mt-2 text-xs text-blue-400 hover:underline">
+              Learn how to enable AI mode →
+            </a>
+          )}
         </div>
 
         {step === "brief" && (
