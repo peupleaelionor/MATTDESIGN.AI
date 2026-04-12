@@ -325,7 +325,7 @@ function QualityTab({ data }: { data: AdminData }) {
             </div>
             <Progress value={good} max={Math.max(results.length, 1)} variant="default" size="sm" />
             <div className="flex items-center justify-between">
-              <span className="text-xs text-amber-400">Weak (&lt;60)</span>
+              <span className="text-xs text-amber-400">{"Weak (<60)"}</span>
               <span className="text-xs text-white tabular-nums">{weak}</span>
             </div>
             <Progress value={weak} max={Math.max(results.length, 1)} variant="violet" size="sm" />
