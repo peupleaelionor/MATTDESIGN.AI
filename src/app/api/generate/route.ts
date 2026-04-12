@@ -1,6 +1,8 @@
 import { type NextRequest } from "next/server";
 import type { ProjectBrief } from "@/types";
 import { runPipeline } from "@/core/orchestrator";
+import { projectBriefSchema } from "@/lib/schemas";
+import { trackEvent } from "@/lib/analytics";
 
 // ─── MattDESIGN.AI — Generate API Route (SSE Streaming) ──────────────────────
 // POST /api/generate
@@ -12,10 +14,10 @@ export const runtime = "nodejs";
 export const maxDuration = 120;
 
 export async function POST(request: NextRequest): Promise<Response> {
-  let body: Partial<ProjectBrief>;
+  let rawBody: unknown;
 
   try {
-    body = (await request.json()) as Partial<ProjectBrief>;
+    rawBody = await request.json();
   } catch {
     return new Response(JSON.stringify({ error: "Invalid JSON body" }), {
       status: 400,
@@ -23,31 +25,33 @@ export async function POST(request: NextRequest): Promise<Response> {
     });
   }
 
-  if (!body.projectName?.trim()) {
-    return new Response(JSON.stringify({ error: "projectName is required" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-  if (!body.description?.trim()) {
-    return new Response(JSON.stringify({ error: "description is required" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-    });
+  const parsed = projectBriefSchema.safeParse(rawBody);
+  if (!parsed.success) {
+    return new Response(
+      JSON.stringify({
+        error: "Validation failed",
+        issues: parsed.error.issues.map((i) => ({
+          path: i.path.join("."),
+          message: i.message,
+        })),
+      }),
+      { status: 400, headers: { "Content-Type": "application/json" } },
+    );
   }
 
   const brief: ProjectBrief = {
-    projectName: body.projectName.trim(),
-    description: body.description.trim(),
-    sector: body.sector?.trim(),
-    audience: body.audience?.trim(),
-    style: body.style?.trim(),
-    tone: body.tone ?? "professional",
-    goals: body.goals ?? [],
-    competitors: body.competitors ?? [],
-    constraints: body.constraints?.trim(),
-    lang: body.lang ?? "en",
+    ...parsed.data,
+    tone: parsed.data.tone ?? "professional",
+    goals: parsed.data.goals ?? [],
+    competitors: parsed.data.competitors ?? [],
+    lang: parsed.data.lang ?? "en",
   };
+
+  trackEvent("generation_started", {
+    projectName: brief.projectName,
+    sector: brief.sector,
+    tone: brief.tone,
+  });
 
   const encoder = new TextEncoder();
 
@@ -64,9 +68,23 @@ export async function POST(request: NextRequest): Promise<Response> {
       };
 
       try {
-        await runPipeline(brief, send);
+        const result = await runPipeline(brief, send);
+        trackEvent(
+          result.status === "complete"
+            ? "generation_completed"
+            : "generation_failed",
+          {
+            projectName: brief.projectName,
+            pipelineId: result.id,
+            status: result.status,
+          },
+        );
       } catch (err) {
         console.error("[API /generate]", err);
+        trackEvent("generation_failed", {
+          projectName: brief.projectName,
+          error: String(err),
+        });
         send({ status: "error", error: "Pipeline failed" });
       } finally {
         try { controller.close(); } catch { /* already closed */ }

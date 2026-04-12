@@ -10,8 +10,8 @@ import { cn } from "@/lib/utils";
 const NAV_LINKS = [
   { label: "Features", href: "/#features" },
   { label: "How it works", href: "/#how-it-works" },
-  { label: "Agents", href: "/#agents" },
-  { label: "Docs", href: "/docs" },
+  { label: "Dashboard", href: "/dashboard" },
+  { label: "Admin", href: "/admin" },
 ];
 
 export function Header() {
