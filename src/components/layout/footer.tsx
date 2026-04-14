@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
 
@@ -7,6 +8,7 @@ const FOOTER_LINKS = {
     { label: "Features", href: "/#features" },
     { label: "How it works", href: "/#how-it-works" },
     { label: "Generate", href: "/generate" },
+    { label: "Brand Guide", href: "/brand" },
   ],
   Resources: [
     { label: "Documentation", href: "/docs" },
@@ -22,21 +24,22 @@ const FOOTER_LINKS = {
 
 export function Footer() {
   return (
-    <footer className="border-t border-[#1E293B] bg-[#0A0F1E]">
+    <footer className="border-t border-white/[0.06] bg-[#0B0D12]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
           <div className="col-span-1">
             <Link href="/" className="flex items-center gap-2.5">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-violet-600 text-sm font-black text-white">
-                M
-              </span>
-              <span className="font-bold text-white tracking-tight">
-                MattDESIGN<span className="text-blue-400">.AI</span>
-              </span>
+              <Image
+                src="/assets/logo.svg"
+                alt="MattDESIGN.AI"
+                width={160}
+                height={28}
+                className="h-7 w-auto"
+              />
             </Link>
             <p className="mt-4 text-sm text-slate-500 leading-relaxed max-w-xs">
-              The self-improving AI design system. From brief to production-ready site in minutes.
+              Le designer IA premium pour créer des sites qui inspirent confiance. De brief à production en minutes.
             </p>
             <div className="mt-6 flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -69,7 +72,7 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-16 pt-8 border-t border-[#1E293B] flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-16 pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-slate-600">
             © {new Date().getFullYear()} MattDESIGN.AI — Open-source, free-first.
           </p>
