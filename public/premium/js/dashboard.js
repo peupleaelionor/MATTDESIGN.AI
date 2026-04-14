@@ -4,6 +4,13 @@
 
 'use strict';
 
+/* ---- HTML ESCAPE HELPER ---- */
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.appendChild(document.createTextNode(str));
+  return div.innerHTML;
+}
+
 /* ---- VIEW SWITCHING ---- */
 function switchView(viewName) {
   // Update sidebar items
@@ -184,26 +191,30 @@ function updateDNAPreview() {
   if (name.length > 2) {
     const activeColor = document.querySelector('.color-btn.active')?.getAttribute('data-color') || '#6366F1';
     const activeStyle = document.querySelector('.style-btn.active')?.getAttribute('data-style') || 'dark-premium';
+    const safeName = escapeHtml(name);
+    const safeFirstChar = escapeHtml(name[0].toUpperCase());
+    const safeColor = escapeHtml(activeColor);
+    const safeStyle = escapeHtml(activeStyle);
     
     previewDNA.innerHTML = `
       <div class="dna-preview-content" style="width:100%;">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-          <div style="width:36px;height:36px;border-radius:8px;background:${activeColor};display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;">${name[0].toUpperCase()}</div>
+          <div style="width:36px;height:36px;border-radius:8px;background:${safeColor};display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;">${safeFirstChar}</div>
           <div>
-            <div style="font-size:14px;font-weight:700;color:var(--text-primary);">${name}</div>
+            <div style="font-size:14px;font-weight:700;color:var(--text-primary);">${safeName}</div>
             <div style="font-size:11px;color:var(--text-muted);">Brand DNA généré</div>
           </div>
         </div>
         <div style="display:flex;gap:6px;margin-bottom:12px;">
           <div style="width:32px;height:32px;border-radius:6px;background:#08090D;border:1px solid rgba(255,255,255,0.1);"></div>
-          <div style="width:32px;height:32px;border-radius:6px;background:${activeColor};"></div>
+          <div style="width:32px;height:32px;border-radius:6px;background:${safeColor};"></div>
           <div style="width:32px;height:32px;border-radius:6px;background:#D6B36A;"></div>
           <div style="width:32px;height:32px;border-radius:6px;background:#F6F4EF;"></div>
           <div style="width:32px;height:32px;border-radius:6px;background:#9CA3AF;"></div>
         </div>
         <div style="font-size:12px;color:var(--text-muted);font-family:var(--font-mono);">
-          Style: ${activeStyle} · Typographie: Inter<br>
-          Accent: ${activeColor} · Fond: #08090D
+          Style: ${safeStyle} · Typographie: Inter<br>
+          Accent: ${safeColor} · Fond: #08090D
         </div>
       </div>
     `;
