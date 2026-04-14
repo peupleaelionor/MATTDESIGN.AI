@@ -1,27 +1,36 @@
 @import "tailwindcss";
 
-/* ─── MattDESIGN.AI v3 — Design System Tokens ─────────────────────────── */
+/* ─── MattDESIGN.AI v3 — Design System Tokens (Premium) ──────────────── */
 
 :root {
-  /* Palette */
-  --md-bg:          #0A0F1E;
-  --md-bg-card:     #111827;
-  --md-bg-elevated: #1E293B;
-  --md-border:      #1E293B;
+  /* Premium Brand Colors */
+  --md-bg:          #0B0D12;
+  --md-bg-deep:     #08090D;
+  --md-bg-card:     #11131A;
+  --md-bg-elevated: #171A23;
+  --md-bg-surface:  #1C1F2E;
+  --md-border:      rgba(255,255,255,0.09);
+  --md-border-subtle: rgba(255,255,255,0.06);
 
-  --md-primary:     #3B82F6;
-  --md-primary-dim: #1D4ED8;
+  --md-primary:     #6366F1;
+  --md-primary-dim: #2563EB;
   --md-secondary:   #7C3AED;
   --md-accent:      #06D6A0;
+  --md-gold:        #D6B36A;
+  --md-gold-light:  #F0D49A;
 
-  --md-text:        #F8FAFC;
-  --md-text-muted:  #94A3B8;
-  --md-text-dim:    #64748B;
+  --md-text:        #F6F4EF;
+  --md-text-muted:  #9CA3AF;
+  --md-text-dim:    #6B7280;
+  --md-text-accent: #A5B4FC;
 
   /* Gradients */
-  --md-grad-primary: linear-gradient(135deg, #3B82F6 0%, #7C3AED 100%);
+  --md-grad-primary: linear-gradient(135deg, #6366F1 0%, #2563EB 60%, #1E40AF 100%);
   --md-grad-accent:  linear-gradient(135deg, #06D6A0 0%, #3B82F6 100%);
-  --md-grad-dark:    linear-gradient(180deg, #0A0F1E 0%, #111827 100%);
+  --md-grad-gold:    linear-gradient(135deg, #D6B36A 0%, #F0D49A 50%, #D6B36A 100%);
+  --md-grad-dark:    linear-gradient(180deg, #0B0D12 0%, #11131A 100%);
+  --md-grad-card:    linear-gradient(145deg, rgba(99,102,241,0.08) 0%, rgba(37,99,235,0.04) 100%);
+  --md-grad-glow:    radial-gradient(ellipse at 50% 0%, rgba(99,102,241,0.25) 0%, transparent 70%);
 
   /* Typography scale */
   --md-text-xs:   0.75rem;
@@ -50,21 +59,24 @@
   /* Radius */
   --md-radius-sm: 0.375rem;
   --md-radius:    0.75rem;
-  --md-radius-lg: 1rem;
-  --md-radius-xl: 1.5rem;
+  --md-radius-lg: 1.25rem;
+  --md-radius-xl: 1.75rem;
   --md-radius-full: 9999px;
 
   /* Shadows */
-  --md-shadow-sm:  0 1px 3px rgba(0,0,0,0.4);
-  --md-shadow:     0 4px 16px rgba(0,0,0,0.5);
-  --md-shadow-lg:  0 8px 32px rgba(0,0,0,0.6);
-  --md-shadow-glow-blue:   0 0 24px rgba(59,130,246,0.35);
-  --md-shadow-glow-violet: 0 0 24px rgba(124,58,237,0.35);
-  --md-shadow-glow-accent: 0 0 24px rgba(6,214,160,0.3);
+  --md-shadow-sm:  0 1px 3px rgba(0,0,0,0.5);
+  --md-shadow:     0 4px 24px rgba(0,0,0,0.4);
+  --md-shadow-lg:  0 12px 48px rgba(0,0,0,0.6);
+  --md-shadow-glow:       0 0 40px rgba(99,102,241,0.2), 0 0 80px rgba(99,102,241,0.08);
+  --md-shadow-glow-blue:  0 0 24px rgba(59,130,246,0.35);
+  --md-shadow-glow-violet:0 0 24px rgba(99,102,241,0.35);
+  --md-shadow-glow-accent:0 0 24px rgba(6,214,160,0.3);
+  --md-shadow-glow-gold:  0 0 30px rgba(214,179,106,0.15);
 
   /* Transitions */
-  --md-transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --md-transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --md-transition:       150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --md-transition-slow:  300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --md-transition-spring:500ms cubic-bezier(0.34, 1.56, 0.64, 1);
 
   /* Legacy aliases for Tailwind */
   --background: var(--md-bg);
@@ -92,10 +104,11 @@ html {
 body {
   background: var(--md-bg);
   color: var(--md-text);
-  font-family: var(--font-sans, 'Geist', system-ui, sans-serif);
+  font-family: var(--font-sans, 'Geist', 'Inter', system-ui, sans-serif);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 /* ─── Selection ─────────────────────────────────────────────────────────── */
@@ -137,6 +150,13 @@ body {
 
 .md-gradient-text-accent {
   background: var(--md-grad-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.md-gradient-text-gold {
+  background: var(--md-grad-gold);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

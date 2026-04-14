@@ -19,9 +19,15 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "MattDESIGN.AI — The AI Design System That Builds Itself",
+  title: "MattDESIGN.AI — Le designer IA premium",
   description:
-    "From a one-line brief to a production-ready website. 10 AI agents. Brand DNA, copy, assets, code — in minutes. Free & open-source.",
+    "Le designer IA premium pour créer des sites qui inspirent confiance. Générez landing pages, logos, assets et design systems professionnels en quelques minutes.",
+  icons: {
+    icon: [
+      { url: "/assets/favicon.svg", type: "image/svg+xml" },
+    ],
+    apple: "/assets/logo-icon.svg",
+  },
   openGraph: {
     title: "MattDESIGN.AI — Design. Code. Ship. Automatically.",
     description:

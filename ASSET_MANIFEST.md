@@ -39,7 +39,25 @@ All assets used in this project are legally cleared. This manifest documents eve
 
 | Asset | Source | License | Notes |
 |-------|--------|---------|-------|
-| No raster images | N/A | N/A | All visuals are CSS-generated (gradients, patterns, glows) or SVG icons from Lucide |
+| `public/assets/logo.svg` | Custom (MattDESIGN.AI) | Proprietary | Horizontal logo with hexagonal icon + wordmark |
+| `public/assets/logo-icon.svg` | Custom (MattDESIGN.AI) | Proprietary | App icon / avatar — rounded square with M mark |
+| `public/assets/favicon.svg` | Custom (MattDESIGN.AI) | Proprietary | 32×32 minimal favicon |
+| CSS-generated visuals | N/A | N/A | Gradients, patterns, glows — all in CSS |
+| Lucide icons | [lucide.dev](https://lucide.dev) | ISC | All UI icons |
+
+## Premium Static Pages
+
+| Asset | Path | Description |
+|-------|------|-------------|
+| Landing Page | `public/premium/index.html` | Full 11-section premium landing page (52K) |
+| Dashboard | `public/premium/dashboard.html` | 8-view navigable dashboard (47K) |
+| Brand Guide | `public/premium/brand.html` | 7-section brand guide (28K) |
+| Design System CSS | `public/premium/css/design-system.css` | 30+ CSS custom properties |
+| Landing CSS | `public/premium/css/landing.css` | Landing page styles |
+| Dashboard CSS | `public/premium/css/dashboard.css` | Dashboard styles |
+| Brand CSS | `public/premium/css/brand.css` | Brand guide styles |
+| Landing JS | `public/premium/js/landing.js` | Nav, reveal, FAQ, typewriter effects |
+| Dashboard JS | `public/premium/js/dashboard.js` | View navigation, timer, DNA preview |
 
 ## Generated Assets (Pipeline Output)
 
@@ -62,4 +80,4 @@ When the pipeline generates asset prompts, they are intended for use with:
 
 ---
 
-*Last updated: 2025-01-01*
+*Last updated: 2026-04-14*

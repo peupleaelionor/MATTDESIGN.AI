@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — MattDESIGN.AI</title>
+  <link rel="icon" type="image/svg+xml" href="/premium/assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/premium/css/design-system.css">
+  <link rel="stylesheet" href="/premium/css/dashboard.css">
+</head>
+<body class="dash-body">
+
+<!-- ============================================================
+     SIDEBAR
+     ============================================================ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <img src="/premium/assets/logo-icon.svg" alt="MattDESIGN.AI" width="32">
+    <span class="sidebar-logo-text">MattDESIGN<span class="logo-ai">.AI</span></span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <span class="nav-section-label">Principal</span>
+      <ul>
+        <li>
+          <button class="sidebar-item active" data-view="dashboard">
+            <i class="fa-solid fa-house"></i>
+            <span>Dashboard</span>
+            <span class="nav-badge new">2</span>
+          </button>
+        </li>
+        <li>
+          <button class="sidebar-item" data-view="new-project">
+            <i class="fa-solid fa-plus"></i>
+            <span>Nouveau projet</span>
+          </button>
+        </li>
+        <li>
+          <button class="sidebar-item" data-view="projects">
+            <i class="fa-solid fa-layer-group"></i>
+            <span>Mes projets</span>
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <div class="nav-section">
+      <span class="nav-section-label">Studio</span>
+      <ul>
+        <li>
+          <button class="sidebar-item" data-view="brand-dna">
+            <i class="fa-solid fa-dna"></i>
+            <span>Brand DNA</span>
+          </button>
+        </li>
+        <li>
+          <button class="sidebar-item" data-view="assets">
+            <i class="fa-solid fa-images"></i>
+            <span>Asset Gallery</span>
+          </button>
+        </li>
+        <li>
+          <button class="sidebar-item" data-view="generation">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span>Génération</span>
+            <span class="nav-badge pulse-badge">●</span>
+          </button>
+        </li>
+        <li>
+          <button class="sidebar-item" data-view="export">
+            <i class="fa-solid fa-code-branch"></i>
+            <span>Export Center</span>
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <div class="nav-section">
+      <span class="nav-section-label">Compte</span>
+      <ul>
+        <li>
+          <button class="sidebar-item" data-view="history">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>Historique</span>
+          </button>
+        </li>
+        <li>
+          <button class="sidebar-item" data-view="settings">
+            <i class="fa-solid fa-gear"></i>
+            <span>Paramètres</span>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="plan-indicator">
+      <div class="plan-icon-sm"><i class="fa-solid fa-layer-group"></i></div>
+      <div class="plan-info">
+        <span class="plan-name-sm">SaaS Starter</span>
+        <div class="plan-usage">
+          <div class="usage-bar"><div class="usage-fill" style="width:40%"></div></div>
+          <span>4/10 projets</span>
+        </div>
+      </div>
+    </div>
+    <div class="user-profile">
+      <div class="user-avatar">M</div>
+      <div class="user-info">
+        <span class="user-name">Matt C.</span>
+        <span class="user-email">matt@design.ai</span>
+      </div>
+      <button class="btn-icon user-more">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </button>
+    </div>
+  </div>
+</aside>
+
+<!-- ============================================================
+     MAIN CONTENT
+     ============================================================ -->
+<main class="dash-main">
+  <!-- Top bar -->
+  <header class="dash-topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <div class="breadcrumb">
+        <span class="breadcrumb-root">MattDESIGN.AI</span>
+        <i class="fa-solid fa-chevron-right" style="font-size:10px;color:var(--text-muted);"></i>
+        <span class="breadcrumb-current" id="breadcrumbCurrent">Dashboard</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn" aria-label="Rechercher">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </button>
+      <button class="topbar-btn" aria-label="Notifications">
+        <i class="fa-solid fa-bell"></i>
+        <span class="notif-dot"></span>
+      </button>
+      <button class="topbar-btn" aria-label="Aide">
+        <i class="fa-solid fa-circle-question"></i>
+      </button>
+      <a href="/premium/" class="btn btn-ghost btn-sm">
+        <i class="fa-solid fa-arrow-left"></i>
+        Site
+      </a>
+    </div>
+  </header>
+
+  <!-- Views container -->
+  <div class="views-container">
+
+    <!-- ==================== VIEW: DASHBOARD ==================== -->
+    <section class="view active" id="view-dashboard">
+      <div class="view-header">
+        <div>
+          <h1 class="t-h2">Bonjour, Matt 👋</h1>
+          <p class="t-body c-secondary mt-1">Voici un aperçu de vos projets et activités récentes.</p>
+        </div>
+        <button class="btn btn-primary" data-view="new-project" onclick="switchView('new-project')">
+          <i class="fa-solid fa-plus"></i>
+          Nouveau projet
+        </button>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-violet"><i class="fa-solid fa-layer-group"></i></div>
+          <div class="stat-value" data-count="12">12</div>
+          <div class="stat-label">Projets actifs</div>
+          <div class="stat-trend positive"><i class="fa-solid fa-arrow-trend-up"></i> +3 ce mois</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-blue"><i class="fa-solid fa-images"></i></div>
+          <div class="stat-value" data-count="89">89</div>
+          <div class="stat-label">Assets générés</div>
+          <div class="stat-trend positive"><i class="fa-solid fa-arrow-trend-up"></i> +24 ce mois</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-gold"><i class="fa-solid fa-shield-check"></i></div>
+          <div class="stat-value">98%</div>
+          <div class="stat-label">Score QA moyen</div>
+          <div class="stat-trend positive"><i class="fa-solid fa-arrow-trend-up"></i> +2% vs précédent</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon-green"><i class="fa-solid fa-clock"></i></div>
+          <div class="stat-value">4.2<span style="font-size:18px">min</span></div>
+          <div class="stat-label">Temps moyen / site</div>
+          <div class="stat-trend negative"><i class="fa-solid fa-arrow-trend-down"></i> -1.3min vs avant</div>
+        </div>
+      </div>
+
+      <div class="dash-columns">
+        <!-- Recent Projects -->
+        <div class="dash-col-main">
+          <div class="section-header">
+            <h2 class="t-h4">Projets récents</h2>
+            <button class="btn btn-ghost btn-sm" onclick="switchView('projects')">Voir tout</button>
+          </div>
+          <div class="projects-list">
+            <div class="project-row">
+              <div class="proj-thumb-lg" style="background:linear-gradient(135deg,#6366F1,#2563EB);">
+                <i class="fa-solid fa-globe"></i>
+              </div>
+              <div class="proj-details">
+                <div class="proj-name-lg">NovaSaaS</div>
+                <div class="proj-meta">
+                  <span class="tag"><i class="fa-solid fa-layer-group"></i> Landing SaaS</span>
+                  <span class="tag">Dark Mode</span>
+                </div>
+              </div>
+              <div class="proj-score-lg">
+                <span class="score-val good">98</span>
+                <span class="score-label">QA</span>
+              </div>
+              <div class="proj-status published">
+                <i class="fa-solid fa-circle-dot"></i> Publié
+              </div>
+              <div class="proj-actions">
+                <button class="btn btn-ghost btn-sm">Ouvrir</button>
+                <button class="btn btn-ghost btn-sm btn-icon">
+                  <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="project-row">
+              <div class="proj-thumb-lg" style="background:linear-gradient(135deg,#1a1208,#D6B36A);">
+                <i class="fa-solid fa-building"></i>
+              </div>
+              <div class="proj-details">
+                <div class="proj-name-lg">AgencyFlow</div>
+                <div class="proj-meta">
+                  <span class="tag"><i class="fa-solid fa-building"></i> Site Agence</span>
+                  <span class="tag">Light Premium</span>
+                </div>
+              </div>
+              <div class="proj-score-lg">
+                <span class="score-val good">96</span>
+                <span class="score-label">QA</span>
+              </div>
+              <div class="proj-status published">
+                <i class="fa-solid fa-circle-dot"></i> Publié
+              </div>
+              <div class="proj-actions">
+                <button class="btn btn-ghost btn-sm">Ouvrir</button>
+                <button class="btn btn-ghost btn-sm btn-icon">
+                  <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="project-row">
+              <div class="proj-thumb-lg" style="background:linear-gradient(135deg,#0f172a,#6366F1);">
+                <i class="fa-solid fa-mobile-screen"></i>
+              </div>
+              <div class="proj-details">
+                <div class="proj-name-lg">LuminaApp</div>
+                <div class="proj-meta">
+                  <span class="tag"><i class="fa-solid fa-mobile-screen"></i> App Mobile</span>
+                  <span class="tag">Dark Futuriste</span>
+                </div>
+              </div>
+              <div class="proj-score-lg">
+                <span class="score-val good">94</span>
+                <span class="score-label">QA</span>
+              </div>
+              <div class="proj-status draft">
+                <i class="fa-solid fa-pen"></i> Brouillon
+              </div>
+              <div class="proj-actions">
+                <button class="btn btn-ghost btn-sm">Ouvrir</button>
+                <button class="btn btn-ghost btn-sm btn-icon">
+                  <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="project-row generating">
+              <div class="proj-thumb-lg" style="background:linear-gradient(135deg,#1a1208,#2a1f0a);">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+              </div>
+              <div class="proj-details">
+                <div class="proj-name-lg">CreatorPortfolio</div>
+                <div class="proj-meta">
+                  <span class="tag"><i class="fa-solid fa-star"></i> Creator Kit</span>
+                  <span class="tag">Dark Chaud</span>
+                </div>
+              </div>
+              <div class="proj-score-lg">
+                <div class="agent-spinner" style="width:16px;height:16px;border-width:2px;"></div>
+              </div>
+              <div class="proj-status generating-status">
+                <div class="agent-spinner" style="width:10px;height:10px;border-width:1.5px;flex-shrink:0;"></div>
+                En cours
+              </div>
+              <div class="proj-actions">
+                <button class="btn btn-ghost btn-sm" onclick="switchView('generation')">Suivre</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity / Quick actions -->
+        <div class="dash-col-side">
+          <!-- Active generation -->
+          <div class="widget">
+            <div class="widget-header">
+              <span class="t-h4">Génération active</span>
+              <button class="btn btn-ghost btn-sm" onclick="switchView('generation')">
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+            <div class="active-gen">
+              <div class="gen-project-name">CreatorPortfolio</div>
+              <div class="gen-progress-info">
+                <span>Page generator</span>
+                <span class="c-accent">65%</span>
+              </div>
+              <div class="gen-progress-bar">
+                <div class="gen-progress-fill" style="width:65%;"></div>
+              </div>
+              <div class="gen-agents-list">
+                <div class="gen-agent-row done">
+                  <i class="fa-solid fa-check"></i>
+                  <span>Brand DNA</span>
+                  <span class="time">0.8s</span>
+                </div>
+                <div class="gen-agent-row done">
+                  <i class="fa-solid fa-check"></i>
+                  <span>Design System</span>
+                  <span class="time">1.2s</span>
+                </div>
+                <div class="gen-agent-row running">
+                  <div class="agent-spinner" style="width:12px;height:12px;border-width:1.5px;"></div>
+                  <span>Page Generator</span>
+                  <span class="time">2m34s</span>
+                </div>
+                <div class="gen-agent-row pending">
+                  <i class="fa-solid fa-circle" style="font-size:6px;color:var(--text-muted);"></i>
+                  <span>QA Critic</span>
+                  <span class="time">—</span>
+                </div>
+                <div class="gen-agent-row pending">
+                  <i class="fa-solid fa-circle" style="font-size:6px;color:var(--text-muted);"></i>
+                  <span>Export Pack</span>
+                  <span class="time">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick actions -->
+          <div class="widget">
+            <div class="widget-header">
+              <span class="t-h4">Actions rapides</span>
+            </div>
+            <div class="quick-actions">
+              <button class="quick-action" onclick="switchView('new-project')">
+                <div class="qa-icon"><i class="fa-solid fa-plus"></i></div>
+                <span>Nouveau projet</span>
+              </button>
+              <button class="quick-action" onclick="switchView('brand-dna')">
+                <div class="qa-icon"><i class="fa-solid fa-dna"></i></div>
+                <span>Brand DNA</span>
+              </button>
+              <button class="quick-action" onclick="switchView('assets')">
+                <div class="qa-icon"><i class="fa-solid fa-images"></i></div>
+                <span>Mes assets</span>
+              </button>
+              <button class="quick-action" onclick="switchView('export')">
+                <div class="qa-icon"><i class="fa-solid fa-code-branch"></i></div>
+                <span>Exporter</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==================== VIEW: NEW PROJECT ==================== -->
+    <section class="view" id="view-new-project">
+      <div class="view-header">
+        <div>
+          <h1 class="t-h2">Nouveau projet</h1>
+          <p class="t-body c-secondary mt-1">Décrivez votre projet — MattDESIGN.AI fait le reste.</p>
+        </div>
+      </div>
+
+      <div class="new-project-layout">
+        <!-- Form -->
+        <div class="np-form">
+          <div class="form-card">
+            <h3 class="t-h4 mb-6">Brief du projet</h3>
+
+            <div class="form-group">
+              <label class="form-label">Nom du projet</label>
+              <input type="text" class="form-input" placeholder="Ex: NovaSaaS, AgencyFlow, CreatorKit…" id="projectName">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Type de site</label>
+              <div class="type-grid">
+                <button class="type-btn active" data-type="saas">
+                  <i class="fa-solid fa-layer-group"></i>
+                  <span>Landing SaaS</span>
+                </button>
+                <button class="type-btn" data-type="agency">
+                  <i class="fa-solid fa-building"></i>
+                  <span>Site agence</span>
+                </button>
+                <button class="type-btn" data-type="app">
+                  <i class="fa-solid fa-mobile-screen"></i>
+                  <span>App mobile</span>
+                </button>
+                <button class="type-btn" data-type="creator">
+                  <i class="fa-solid fa-star"></i>
+                  <span>Creator</span>
+                </button>
+                <button class="type-btn" data-type="portfolio">
+                  <i class="fa-solid fa-briefcase"></i>
+                  <span>Portfolio</span>
+                </button>
+                <button class="type-btn" data-type="ecom">
+                  <i class="fa-solid fa-bag-shopping"></i>
+                  <span>E-commerce</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Description du projet</label>
+              <textarea class="form-textarea" placeholder="Décrivez votre projet : secteur, objectif, cible, ton souhaité, concurrents inspirants, valeurs clés…" rows="4" id="projectDesc"></textarea>
+              <div class="form-hint"><i class="fa-solid fa-lightbulb"></i> Plus vous êtes précis, plus le résultat sera pertinent</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Style visuel</label>
+              <div class="style-grid">
+                <button class="style-btn active" data-style="dark-premium">
+                  <div class="style-preview sp-dark"></div>
+                  <span>Dark Premium</span>
+                </button>
+                <button class="style-btn" data-style="light-clean">
+                  <div class="style-preview sp-light"></div>
+                  <span>Light Clean</span>
+                </button>
+                <button class="style-btn" data-style="bold-expressive">
+                  <div class="style-preview sp-bold"></div>
+                  <span>Bold Expressive</span>
+                </button>
+                <button class="style-btn" data-style="minimal-swiss">
+                  <div class="style-preview sp-minimal"></div>
+                  <span>Minimal Swiss</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Couleur dominante</label>
+              <div class="color-grid">
+                <button class="color-btn active" data-color="#6366F1" style="--cc:#6366F1;"></button>
+                <button class="color-btn" data-color="#2563EB" style="--cc:#2563EB;"></button>
+                <button class="color-btn" data-color="#D6B36A" style="--cc:#D6B36A;"></button>
+                <button class="color-btn" data-color="#34D399" style="--cc:#34D399;"></button>
+                <button class="color-btn" data-color="#F472B6" style="--cc:#F472B6;"></button>
+                <button class="color-btn" data-color="#F59E0B" style="--cc:#F59E0B;"></button>
+                <button class="color-btn color-custom">
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button class="btn btn-primary btn-lg" id="startGenerationBtn" style="flex:1;">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                Lancer la génération
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preview -->
+        <div class="np-preview">
+          <div class="preview-card">
+            <div class="preview-label">
+              <span class="badge badge-accent"><i class="fa-solid fa-eye"></i> Aperçu du Brand DNA</span>
+            </div>
+            <div class="preview-dna" id="previewDNA">
+              <div class="dna-waiting">
+                <i class="fa-solid fa-dna fa-2x" style="color:var(--text-muted);"></i>
+                <p class="t-body-sm c-muted mt-3">Remplissez le brief pour voir une prévisualisation du Brand DNA</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="ai-features-card">
+            <h4 class="t-caption c-muted mb-4">Ce que MattDESIGN va générer</h4>
+            <div class="ai-feat-list">
+              <div class="ai-feat"><i class="fa-solid fa-check c-accent"></i> Brand DNA complet</div>
+              <div class="ai-feat"><i class="fa-solid fa-check c-accent"></i> Palette de couleurs harmonieuse</div>
+              <div class="ai-feat"><i class="fa-solid fa-check c-accent"></i> Typographies assorties</div>
+              <div class="ai-feat"><i class="fa-solid fa-check c-accent"></i> Logo & favicon</div>
+              <div class="ai-feat"><i class="fa-solid fa-check c-accent"></i> 3 variantes du site</div>
+              <div class="ai-feat"><i class="fa-solid fa-check c-accent"></i> Critique QA automatique</div>
+              <div class="ai-feat"><i class="fa-solid fa-check c-accent"></i> Export GitHub-ready</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==================== VIEW: GENERATION ==================== -->
+    <section class="view" id="view-generation">
+      <div class="view-header">
+        <div>
+          <h1 class="t-h2">Génération en cours</h1>
+          <p class="t-body c-secondary mt-1">MattDESIGN.AI travaille sur votre projet.</p>
+        </div>
+        <div class="gen-timer">
+          <i class="fa-solid fa-clock c-secondary"></i>
+          <span id="genTimerDisplay" class="t-mono">03:12</span>
+        </div>
+      </div>
+
+      <div class="gen-layout">
+        <!-- Main progress -->
+        <div class="gen-main">
+          <div class="gen-hero-card">
+            <div class="gen-project-header">
+              <div class="gen-project-icon" style="background:linear-gradient(135deg,#1a1208,#2a1f0a);">
+                <i class="fa-solid fa-star"></i>
+              </div>
+              <div>
+                <div class="gen-project-title">CreatorPortfolio</div>
+                <div class="t-body-sm c-secondary">Creator Kit — Dark Chaud</div>
+              </div>
+              <div class="gen-global-progress">
+                <div class="progress-ring">
+                  <svg viewBox="0 0 60 60">
+                    <circle cx="30" cy="30" r="24" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="3"/>
+                    <circle cx="30" cy="30" r="24" fill="none" stroke="url(#ringGrad)" stroke-width="3"
+                      stroke-dasharray="150.8" stroke-dashoffset="52.8" stroke-linecap="round" transform="rotate(-90 30 30)"/>
+                    <defs>
+                      <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#6366F1"/>
+                        <stop offset="100%" stop-color="#D6B36A"/>
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                  <div class="ring-center">65%</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Agents pipeline -->
+            <div class="agents-pipeline">
+              <div class="agent-step completed">
+                <div class="agent-step-icon">
+                  <i class="fa-solid fa-check"></i>
+                </div>
+                <div class="agent-step-info">
+                  <div class="agent-step-name">Brand DNA Engine</div>
+                  <div class="agent-step-detail">Palette, typographies, voix de marque, personnalité</div>
+                </div>
+                <div class="agent-step-time">0.8s</div>
+              </div>
+
+              <div class="agent-connector completed"></div>
+
+              <div class="agent-step completed">
+                <div class="agent-step-icon">
+                  <i class="fa-solid fa-check"></i>
+                </div>
+                <div class="agent-step-info">
+                  <div class="agent-step-name">Design System Generator</div>
+                  <div class="agent-step-detail">Composants, espacements, tokens de design</div>
+                </div>
+                <div class="agent-step-time">1.2s</div>
+              </div>
+
+              <div class="agent-connector completed"></div>
+
+              <div class="agent-step running">
+                <div class="agent-step-icon">
+                  <div class="agent-spinner" style="width:18px;height:18px;border-width:2.5px;"></div>
+                </div>
+                <div class="agent-step-info">
+                  <div class="agent-step-name">Page Generator</div>
+                  <div class="agent-step-detail">Génération de 3 variantes complètes en parallèle</div>
+                </div>
+                <div class="agent-step-time live">
+                  <div class="agent-spinner" style="width:10px;height:10px;border-width:1.5px;margin-right:5px;"></div>
+                  En cours
+                </div>
+              </div>
+
+              <div class="agent-connector"></div>
+
+              <div class="agent-step pending">
+                <div class="agent-step-icon pending-icon">
+                  <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div class="agent-step-info">
+                  <div class="agent-step-name">Visual QA Critic</div>
+                  <div class="agent-step-detail">Analyse qualité, score et corrections automatiques</div>
+                </div>
+                <div class="agent-step-time">En attente</div>
+              </div>
+
+              <div class="agent-connector"></div>
+
+              <div class="agent-step pending">
+                <div class="agent-step-icon pending-icon">
+                  <i class="fa-solid fa-box-archive"></i>
+                </div>
+                <div class="agent-step-info">
+                  <div class="agent-step-name">Export Pack</div>
+                  <div class="agent-step-detail">GitHub, assets, registre légal, fichiers Figma</div>
+                </div>
+                <div class="agent-step-time">En attente</div>
+              </div>
+            </div>
+
+            <!-- Live log -->
+            <div class="gen-log">
+              <div class="log-header">
+                <span class="t-caption c-muted">Journal en direct</span>
+                <span class="badge badge-green"><span class="badge-dot" style="background:#34D399;"></span> Live</span>
+              </div>
+              <div class="log-entries" id="logEntries">
+                <div class="log-entry success"><span class="log-time">00:01</span><span>✓ Brand DNA généré — "Creator warm gold" identity</span></div>
+                <div class="log-entry success"><span class="log-time">00:03</span><span>✓ Design system créé — 47 tokens, 12 composants</span></div>
+                <div class="log-entry success"><span class="log-time">00:08</span><span>✓ Palette harmonisée — #1a1208 / #D6B36A / #F0D49A</span></div>
+                <div class="log-entry success"><span class="log-time">00:12</span><span>✓ Typographies sélectionnées — Playfair Display + Inter</span></div>
+                <div class="log-entry info"><span class="log-time">01:20</span><span>→ Génération variante 1/3 — Hero section...</span></div>
+                <div class="log-entry info"><span class="log-time">01:45</span><span>→ Génération variante 2/3 — Features section...</span></div>
+                <div class="log-entry running"><span class="log-time">03:12</span><span class="pulse-text">⟳ Génération variante 3/3 — Finalisation...</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Variants preview -->
+        <div class="gen-side">
+          <div class="widget">
+            <div class="widget-header">
+              <span class="t-h4">Variantes générées</span>
+              <span class="badge badge-accent">3</span>
+            </div>
+            <div class="variants-list">
+              <div class="variant-item completed">
+                <div class="variant-thumb vt-1"></div>
+                <div class="variant-info">
+                  <div class="variant-name">Variante A</div>
+                  <div class="variant-desc">Dark warm — Hero centré</div>
+                </div>
+                <i class="fa-solid fa-check" style="color:#34D399;font-size:12px;"></i>
+              </div>
+              <div class="variant-item completed">
+                <div class="variant-thumb vt-2"></div>
+                <div class="variant-info">
+                  <div class="variant-name">Variante B</div>
+                  <div class="variant-desc">Dark warm — Split hero</div>
+                </div>
+                <i class="fa-solid fa-check" style="color:#34D399;font-size:12px;"></i>
+              </div>
+              <div class="variant-item running">
+                <div class="variant-thumb vt-generating">
+                  <div class="agent-spinner"></div>
+                </div>
+                <div class="variant-info">
+                  <div class="variant-name">Variante C</div>
+                  <div class="variant-desc">En cours de génération…</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="widget">
+            <h4 class="t-h4 mb-4">Estimations</h4>
+            <div class="estimate-list">
+              <div class="estimate-row">
+                <span class="c-secondary">Temps restant</span>
+                <span class="c-primary font-weight:600">~2 min</span>
+              </div>
+              <div class="estimate-row">
+                <span class="c-secondary">Score QA estimé</span>
+                <span style="color:#34D399;font-weight:700;">96-98</span>
+              </div>
+              <div class="estimate-row">
+                <span class="c-secondary">Assets générés</span>
+                <span class="c-primary">14 fichiers</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==================== VIEW: BRAND DNA ==================== -->
+    <section class="view" id="view-brand-dna">
+      <div class="view-header">
+        <div>
+          <h1 class="t-h2">Brand DNA</h1>
+          <p class="t-body c-secondary mt-1">L'identité de marque de votre projet NovaSaaS.</p>
+        </div>
+        <button class="btn btn-primary btn-sm">
+          <i class="fa-solid fa-rotate"></i>
+          Régénérer
+        </button>
+      </div>
+
+      <div class="dna-grid">
+        <!-- Colors -->
+        <div class="dna-card">
+          <div class="dna-card-header">
+            <i class="fa-solid fa-palette c-accent"></i>
+            <h3 class="t-h4">Palette de couleurs</h3>
+          </div>
+          <div class="color-swatches">
+            <div class="swatch">
+              <div class="swatch-color" style="background:#08090D;"></div>
+              <div class="swatch-info">
+                <span class="swatch-name">Fond principal</span>
+                <span class="swatch-hex t-mono">#08090D</span>
+              </div>
+            </div>
+            <div class="swatch">
+              <div class="swatch-color" style="background:#6366F1;"></div>
+              <div class="swatch-info">
+                <span class="swatch-name">Accent primaire</span>
+                <span class="swatch-hex t-mono">#6366F1</span>
+              </div>
+            </div>
+            <div class="swatch">
+              <div class="swatch-color" style="background:#D6B36A;"></div>
+              <div class="swatch-info">
+                <span class="swatch-name">Accent secondaire</span>
+                <span class="swatch-hex t-mono">#D6B36A</span>
+              </div>
+            </div>
+            <div class="swatch">
+              <div class="swatch-color" style="background:#F6F4EF;"></div>
+              <div class="swatch-info">
+                <span class="swatch-name">Texte primaire</span>
+                <span class="swatch-hex t-mono">#F6F4EF</span>
+              </div>
+            </div>
+            <div class="swatch">
+              <div class="swatch-color" style="background:#9CA3AF;"></div>
+              <div class="swatch-info">
+                <span class="swatch-name">Texte secondaire</span>
+                <span class="swatch-hex t-mono">#9CA3AF</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Typography -->
+        <div class="dna-card">
+          <div class="dna-card-header">
+            <i class="fa-solid fa-font c-accent"></i>
+            <h3 class="t-h4">Typographies</h3>
+          </div>
+          <div class="typo-list">
+            <div class="typo-item">
+              <div class="typo-sample" style="font-size:28px;font-weight:700;letter-spacing:-0.03em;">Inter</div>
+              <div class="typo-meta">
+                <span class="typo-role">Display / Titres</span>
+                <span class="tag">700 — 800</span>
+              </div>
+            </div>
+            <div class="typo-item">
+              <div class="typo-sample" style="font-size:16px;font-weight:400;">Inter Regular</div>
+              <div class="typo-meta">
+                <span class="typo-role">Corps de texte</span>
+                <span class="tag">400 — 500</span>
+              </div>
+            </div>
+            <div class="typo-item">
+              <div class="typo-sample t-mono" style="font-size:14px;color:var(--text-muted);">JetBrains Mono</div>
+              <div class="typo-meta">
+                <span class="typo-role">Code / Données</span>
+                <span class="tag">Mono</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Personality -->
+        <div class="dna-card">
+          <div class="dna-card-header">
+            <i class="fa-solid fa-sparkles c-accent"></i>
+            <h3 class="t-h4">Personnalité de marque</h3>
+          </div>
+          <div class="personality-traits">
+            <div class="trait">
+              <div class="trait-label">Premium</div>
+              <div class="trait-bar"><div class="trait-fill" style="width:95%;"></div></div>
+            </div>
+            <div class="trait">
+              <div class="trait-label">Innovant</div>
+              <div class="trait-bar"><div class="trait-fill" style="width:88%;"></div></div>
+            </div>
+            <div class="trait">
+              <div class="trait-label">Confiant</div>
+              <div class="trait-bar"><div class="trait-fill" style="width:92%;"></div></div>
+            </div>
+            <div class="trait">
+              <div class="trait-label">Précis</div>
+              <div class="trait-bar"><div class="trait-fill" style="width:85%;"></div></div>
+            </div>
+          </div>
+          <div class="tone-words mt-4">
+            <span class="tag">Maîtrisé</span>
+            <span class="tag">Ambitieux</span>
+            <span class="tag">Fiable</span>
+            <span class="tag">Avant-gardiste</span>
+          </div>
+        </div>
+
+        <!-- Voice -->
+        <div class="dna-card">
+          <div class="dna-card-header">
+            <i class="fa-solid fa-microphone c-accent"></i>
+            <h3 class="t-h4">Voix de marque</h3>
+          </div>
+          <div class="voice-examples">
+            <div class="voice-do">
+              <span class="voice-label do">Faire</span>
+              <p class="t-body-sm">"Lancez un site qui inspire confiance dès la première seconde."</p>
+            </div>
+            <div class="voice-dont">
+              <span class="voice-label dont">Éviter</span>
+              <p class="t-body-sm">"Notre solution innovante et disruptive révolutionne le marché…"</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==================== VIEW: ASSETS ==================== -->
+    <section class="view" id="view-assets">
+      <div class="view-header">
+        <div>
+          <h1 class="t-h2">Asset Gallery</h1>
+          <p class="t-body c-secondary mt-1">89 assets générés et enregistrés.</p>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-ghost btn-sm">
+            <i class="fa-solid fa-filter"></i> Filtrer
+          </button>
+          <button class="btn btn-primary btn-sm">
+            <i class="fa-solid fa-download"></i> Tout exporter
+          </button>
+        </div>
+      </div>
+
+      <div class="asset-filters">
+        <button class="asset-filter active">Tous</button>
+        <button class="asset-filter">Logos</button>
+        <button class="asset-filter">Illustrations</button>
+        <button class="asset-filter">Icônes</button>
+        <button class="asset-filter">Patterns</button>
+        <button class="asset-filter">Favicons</button>
+      </div>
+
+      <div class="assets-grid">
+        <!-- Logo assets -->
+        <div class="asset-card">
+          <div class="asset-preview">
+            <img src="/premium/assets/logo.svg" alt="Logo horizontal" style="padding:16px;width:100%;height:100%;object-fit:contain;">
+          </div>
+          <div class="asset-info">
+            <span class="asset-name">Logo horizontal</span>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="tag">SVG</span>
+              <span class="asset-legal"><i class="fa-solid fa-shield-check" style="color:#34D399;font-size:10px;"></i> Commercial</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="asset-card">
+          <div class="asset-preview" style="background:#0B0D12;">
+            <img src="/premium/assets/logo-icon.svg" alt="Logo icon" style="padding:20px;width:100%;height:100%;object-fit:contain;">
+          </div>
+          <div class="asset-info">
+            <span class="asset-name">Logo icône</span>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="tag">SVG</span>
+              <span class="asset-legal"><i class="fa-solid fa-shield-check" style="color:#34D399;font-size:10px;"></i> Commercial</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="asset-card">
+          <div class="asset-preview" style="background:#0B0D12;">
+            <img src="/premium/assets/favicon.svg" alt="Favicon" style="padding:24px;width:100%;height:100%;object-fit:contain;">
+          </div>
+          <div class="asset-info">
+            <span class="asset-name">Favicon 32×32</span>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="tag">SVG</span>
+              <span class="asset-legal"><i class="fa-solid fa-shield-check" style="color:#34D399;font-size:10px;"></i> Commercial</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pattern assets -->
+        <div class="asset-card">
+          <div class="asset-preview pattern-preview-1"></div>
+          <div class="asset-info">
+            <span class="asset-name">Pattern grille violet</span>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="tag">SVG / CSS</span>
+              <span class="asset-legal"><i class="fa-solid fa-shield-check" style="color:#34D399;font-size:10px;"></i> Commercial</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="asset-card">
+          <div class="asset-preview pattern-preview-2"></div>
+          <div class="asset-info">
+            <span class="asset-name">Gradient hero</span>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="tag">CSS</span>
+              <span class="asset-legal"><i class="fa-solid fa-shield-check" style="color:#34D399;font-size:10px;"></i> Commercial</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="asset-card">
+          <div class="asset-preview pattern-preview-3"></div>
+          <div class="asset-info">
+            <span class="asset-name">Noise texture</span>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="tag">PNG</span>
+              <span class="asset-legal"><i class="fa-solid fa-shield-check" style="color:#34D399;font-size:10px;"></i> Commercial</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==================== VIEW: EXPORT ==================== -->
+    <section class="view" id="view-export">
+      <div class="view-header">
+        <div>
+          <h1 class="t-h2">Export Center</h1>
+          <p class="t-body c-secondary mt-1">Exportez votre site et vos assets vers votre plateforme préférée.</p>
+        </div>
+      </div>
+
+      <div class="export-grid">
+        <div class="export-card">
+          <div class="export-icon" style="background:rgba(255,255,255,0.08);">
+            <i class="fa-brands fa-github" style="font-size:28px;color:var(--text-primary);"></i>
+          </div>
+          <h3 class="t-h4 mt-4">GitHub Export</h3>
+          <p class="t-body-sm c-secondary mt-2">Code HTML/CSS/JS propre, documenté, prêt à déployer sur GitHub et Vercel.</p>
+          <div class="export-includes">
+            <span class="tag">HTML</span>
+            <span class="tag">CSS</span>
+            <span class="tag">JS</span>
+            <span class="tag">README</span>
+          </div>
+          <button class="btn btn-primary mt-4" style="width:100%;justify-content:center;">
+            <i class="fa-solid fa-download"></i> Exporter vers GitHub
+          </button>
+        </div>
+
+        <div class="export-card">
+          <div class="export-icon" style="background:rgba(37,99,235,0.12);">
+            <i class="fa-solid fa-frame" style="font-size:28px;color:#60A5FA;"></i>
+          </div>
+          <h3 class="t-h4 mt-4">Framer Export</h3>
+          <p class="t-body-sm c-secondary mt-2">Import direct dans Framer avec tous les composants et styles définis.</p>
+          <div class="export-includes">
+            <span class="tag">Composants</span>
+            <span class="tag">Variables</span>
+            <span class="tag">Breakpoints</span>
+          </div>
+          <button class="btn btn-ghost mt-4" style="width:100%;justify-content:center;">
+            <i class="fa-solid fa-download"></i> Exporter vers Framer
+          </button>
+        </div>
+
+        <div class="export-card">
+          <div class="export-icon" style="background:rgba(99,102,241,0.12);">
+            <i class="fa-brands fa-figma" style="font-size:28px;color:#A5B4FC;"></i>
+          </div>
+          <h3 class="t-h4 mt-4">Figma Export</h3>
+          <p class="t-body-sm c-secondary mt-2">Fichier Figma complet avec design tokens, composants et documentation.</p>
+          <div class="export-includes">
+            <span class="tag">Design tokens</span>
+            <span class="tag">Components</span>
+            <span class="tag">Styles</span>
+          </div>
+          <button class="btn btn-ghost mt-4" style="width:100%;justify-content:center;">
+            <i class="fa-solid fa-download"></i> Exporter vers Figma
+          </button>
+        </div>
+
+        <div class="export-card">
+          <div class="export-icon" style="background:rgba(214,179,106,0.12);">
+            <i class="fa-solid fa-box-archive" style="font-size:28px;color:var(--accent-gold);"></i>
+          </div>
+          <h3 class="t-h4 mt-4">Pack complet ZIP</h3>
+          <p class="t-body-sm c-secondary mt-2">Tout en un : code, assets SVG/PNG, registre légal, brand guide PDF.</p>
+          <div class="export-includes">
+            <span class="tag">Tout inclus</span>
+            <span class="tag">Légal</span>
+            <span class="tag">Brand guide</span>
+          </div>
+          <button class="btn btn-gold mt-4" style="width:100%;justify-content:center;">
+            <i class="fa-solid fa-download"></i> Télécharger le pack
+          </button>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==================== VIEW: SETTINGS ==================== -->
+    <section class="view" id="view-settings">
+      <div class="view-header">
+        <div>
+          <h1 class="t-h2">Paramètres</h1>
+          <p class="t-body c-secondary mt-1">Gérez votre compte et vos préférences.</p>
+        </div>
+      </div>
+
+      <div class="settings-layout">
+        <div class="settings-card">
+          <h3 class="t-h4 mb-6">Profil</h3>
+          <div class="form-group">
+            <label class="form-label">Nom complet</label>
+            <input type="text" class="form-input" value="Matt Créateur">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-input" value="matt@design.ai">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Entreprise</label>
+            <input type="text" class="form-input" value="Studio M">
+          </div>
+          <button class="btn btn-primary">Sauvegarder</button>
+        </div>
+
+        <div class="settings-card">
+          <h3 class="t-h4 mb-6">Plan actuel</h3>
+          <div class="plan-current">
+            <div class="plan-current-badge">
+              <i class="fa-solid fa-layer-group"></i>
+              SaaS Starter Site
+            </div>
+            <div class="plan-current-detail">
+              <span class="t-body-sm c-secondary">Renouvellement le 1 mai 2026</span>
+              <span class="t-body-sm c-secondary">99€ / mois</span>
+            </div>
+            <div class="usage-progress">
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                <span class="t-body-sm c-secondary">Projets utilisés</span>
+                <span class="t-body-sm">4 / 10</span>
+              </div>
+              <div class="gen-progress-bar">
+                <div class="gen-progress-fill" style="width:40%;"></div>
+              </div>
+            </div>
+            <button class="btn btn-gold btn-sm mt-4">
+              <i class="fa-solid fa-arrow-up"></i> Passer Agency Kit
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Fallback for other views -->
+    <section class="view" id="view-projects"></section>
+    <section class="view" id="view-history"></section>
+
+  </div><!-- /views-container -->
+</main>
+
+<script src="/premium/js/dashboard.js"></script>
+</body>
+</html>

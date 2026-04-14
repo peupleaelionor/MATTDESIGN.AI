@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { Button, Badge } from "@/components/ui";
 import { cn } from "@/lib/utils";
@@ -11,23 +12,25 @@ const NAV_LINKS = [
   { label: "Features", href: "/#features" },
   { label: "How it works", href: "/#how-it-works" },
   { label: "Dashboard", href: "/dashboard" },
-  { label: "Admin", href: "/admin" },
+  { label: "Brand Guide", href: "/brand" },
 ];
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 border-b border-[#1E293B]/60 bg-[#0A0F1E]/80 backdrop-blur-xl">
+    <header className="fixed top-0 inset-x-0 z-50 border-b border-white/[0.06] bg-[#0B0D12]/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-violet-600 text-sm font-black text-white shadow-lg group-hover:shadow-blue-500/40 transition-all">
-            M
-          </span>
-          <span className="font-bold text-white tracking-tight">
-            MattDESIGN<span className="text-blue-400">.AI</span>
-          </span>
+          <Image
+            src="/assets/logo.svg"
+            alt="MattDESIGN.AI"
+            width={180}
+            height={32}
+            className="h-8 w-auto"
+            priority
+          />
           <Badge variant="violet" className="hidden sm:inline-flex">v3</Badge>
         </Link>
 
@@ -72,7 +75,7 @@ export function Header() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-[#1E293B] bg-[#0A0F1E] px-4 py-4">
+        <div className="md:hidden border-t border-white/[0.06] bg-[#0B0D12] px-4 py-4">
           <nav className="flex flex-col gap-1">
             {NAV_LINKS.map((link) => (
               <Link
@@ -85,7 +88,7 @@ export function Header() {
               </Link>
             ))}
           </nav>
-          <div className="mt-4 pt-4 border-t border-[#1E293B]">
+          <div className="mt-4 pt-4 border-t border-white/[0.06]">
             <Link href="/generate" onClick={() => setMobileOpen(false)}>
               <Button className="w-full" size="md" variant="primary">
                 Generate →
